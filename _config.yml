@@ -74,4 +74,4 @@ deploy:
   type: git
   repo:
     github: git@github.com:wangyiz4262/wangyiz4262.github.io.git,master
-    gitcafe: git@gitcafe.com:wangyiz4262/wangyiz4262.git,gitcafe-pages
+    coding: git@git.coding.net:wangyiz4262/blog.git,master
