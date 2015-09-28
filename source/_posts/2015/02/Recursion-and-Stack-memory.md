@@ -4,8 +4,8 @@ categories:
 - Algorithms
 tags:
 - leetcode
-- tree
-- stack
+- tree and graph
+- stack and queue
 ---
 ![](/img/leetcode-stack.png)
 

@@ -4,7 +4,6 @@ categories:
   - Internet of Things
 tags:
   - raspberry pi
-  - gpio
   - python
 ---
 ![](/img/iot-debounce_switch.jpg)

@@ -283,7 +283,7 @@
 			"file": "source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-2.md",
 			"settings":
 			{
-				"buffer_size": 835,
+				"buffer_size": 2589,
 				"line_ending": "Unix"
 			}
 		}
@@ -302,6 +302,10 @@
 			[
 				"php",
 				"Set Syntax: PHP"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
 			],
 			[
 				"ss java",
@@ -386,8 +390,19 @@
 	"file_history":
 	[
 		"/D/Yizhe/Documents/Git/blog/_config.yml",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-1.md",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/_config.yml",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/layout.ejs",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-debouncing-switch.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/01/Breadth-First-Traversal-with-Queue.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Recursion-and-Stack-memory.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Corner-cases-for-binary-trees.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/DFS-in-Binary-Tree.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-1.md",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_widget/recent_posts.ejs",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/article.ejs",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/article.styl",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_variables.styl",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/sidebar.styl",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-Bouncing-Switch.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Build-personal-blog-with-Hexo-Part-2.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Interfacing-an-LED-and-Bouncing-Switch.md",
@@ -396,11 +411,9 @@
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Run-Length-Encoding-algorithm-for-Strings.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Breadth-First-Traversal-with-Queue.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Build-personal-blog-with-Hexo-Part-1.md",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/_config.yml",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Recursion-and-Stack-memory.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Corner-cases-for-binary-trees.md",
 		"/D/Yizhe/Documents/Git/blog/scaffolds/post.md",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/article.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/head.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/header.ejs",
 		"/D/Yizhe/Documents/Git/blog/public/CNAME",
@@ -408,7 +421,6 @@
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/CNAME",
 		"/D/Yizhe/Documents/Git/blog/public/_posts/Build-personal-blog-with-Hexo/index.html",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/post/thumbnail.ejs",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/article.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/style.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/header.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/footer.ejs",
@@ -504,13 +516,7 @@
 		"/D/Yizhe/Documents/WebService/payment/views/welcome/login.html",
 		"/Users/yizhewang/Downloads/routing.sh",
 		"/Users/yizhewang/Downloads/fis.pac",
-		"/Users/yizhewang/Sites/payment/js/modules/welcome/controllers.js",
-		"/Users/yizhewang/Sites/payment/index.html",
-		"/Users/yizhewang/Sites/payment_terminal/.gitignore",
-		"/Users/yizhewang/Sites/payment_terminal/apps/setup/js/controllers.js",
-		"/Users/yizhewang/Sites/payment_terminal/views/index.html",
-		"/Users/yizhewang/Sites/payment_terminal/js/controllers/index.js",
-		"/Users/yizhewang/Sites/payment_terminal/index.html"
+		"/Users/yizhewang/Sites/payment/js/modules/welcome/controllers.js"
 	],
 	"find":
 	{
@@ -528,6 +534,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"pacity",
+			"opacity",
+			"hover",
+			"article-meta",
+			"article-title",
+			"summary-inner",
 			".",
 			" p",
 			"p ",
@@ -601,15 +613,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 835,
+						"buffer_size": 2589,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								680,
-								680
+								1873,
+								1873
 							]
 						],
 						"settings":
@@ -617,7 +629,7 @@
 							"syntax": "Packages/MarkdownEditing/Markdown.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1026.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

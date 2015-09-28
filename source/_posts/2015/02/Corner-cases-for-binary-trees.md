@@ -4,7 +4,7 @@ categories:
 - Algorithms
 tags:
 - leetcode
-- tree
+- tree and graph
 ---
 ![](/img/leetcode-tree.jpg)
 When doing LeetCode problems, some corner cases should be considered when traversing through the tree, otherwise unexpected errors shall appear. Examples:

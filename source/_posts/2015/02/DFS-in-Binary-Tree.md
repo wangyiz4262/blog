@@ -4,7 +4,7 @@ categories:
 - Algorithms
 tags:
 - leetcode
-- tree
+- tree and graph
 
 ---
 ![](/img/leetcode-tree.jpg)

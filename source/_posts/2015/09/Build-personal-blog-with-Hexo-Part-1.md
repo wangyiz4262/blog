@@ -4,7 +4,6 @@ categories:
 - Tutorial
 tags: 
 - markdown
-- hexo
 ---
 ![](/img/blog-hexo.png)
 
