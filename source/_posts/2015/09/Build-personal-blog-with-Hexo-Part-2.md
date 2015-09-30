@@ -68,14 +68,28 @@ Are you sure you want to continue connecting (yes/no)?
 ```
 
 ### Settings on Hexo
-
+You may find your blog settings in file "_config.yml". There are only two places you need to change at this stage:
+1. Title of your blog
+In the very beginning of this file, you can change the title and subtitle to whatever you like.
+```
+# Site
+title: Brainstorm
+subtitle: Geeks never think alike.
+description: Yizhe's blog
+author: Yizhe Wang
+language: en
+timezone:
+```
+2. Deployment settings
+In the very ending of this file, you need to change the repository_url to the repository you created on GitHub. In my example, it should be "git@github.com:wangyiz4262/wangyiz4262.github.io.git". And branch should be master.
 ```
 deploy:
   type: git
   message: [message]
   repo:
     github: <repository url>,[branch]
-    gitcafe: <repository url>,[branch] 
 ```
 
-### DNS resolution
+If you have a domain name of your own, you can bind it to your blog. Please find tutorials online.
+
+Now the deployment is done. Enjoy blogging!

@@ -12,7 +12,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://wangyizhe.net
+url: http://blog.wangyizhe.net
 root: /
 permalink: :year/:month/:title/
 permalink_defaults:
@@ -67,12 +67,12 @@ theme: hueman
 plugins:
 - hexo-generator-feed
 - hexo-generator-sitemap
+duoshuo_shortname: wangyiz4262
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
   repo:
-    github: git@github.com:wangyiz4262/wangyiz4262.github.io.git,master
-    gitcafe: git@gitcafe.com:wangyiz4262/wangyiz4262.git,gitcafe-pages
-    # coding: git@git.coding.net:wangyiz4262/blog.git,master
+    github: git@github.com:wangyiz4262/blog.git,gh-pages
+    gitcafe: git@gitcafe.com:wangyiz4262/blog.git,gitcafe-pages
