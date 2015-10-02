@@ -29,7 +29,7 @@
 .article-summary
   width: 50%
   float: left
-  margin-bottom: 30px
+  margin-bottom: 15px
   a
     text-decoration: none
     color: color-link
@@ -39,7 +39,7 @@
     .item-thumbnail
       opacity: 1
       transition: all 0.2s ease
-      float: left
+      /*float: left*/
       .thumbnail
         width: 80px
         height: 80px
@@ -53,7 +53,7 @@
         .thumbnail-image
           position: absolute
           background-size: cover
-          background-position: center
+          background-position: left
         .thumbnail-none
           background-image: url(thumbnail-default-small)
           background-size: 100% 100%
@@ -82,10 +82,10 @@
         background-image: url(thumbnail-default)
     */
     .article-title
-      /*margin-bottom: 10px*/
-      padding: 5px 0 0 94px
-      min-height: 75px
-      font-size: 22px
+      margin: 5px 0 10px
+      text-align: left
+      font-family: arial;
+      font-size: 19px
       font-weight: 400
       line-height: 1.5em
       word-wrap: break-word
@@ -99,6 +99,8 @@
       line-height: line-height
       overflow: hidden
       height: 4 * line-height
+      padding: 0 5px 0 10px;
+      border-left: 4px outset;
 
     &:hover
       .item-thumbnail
@@ -110,7 +112,7 @@
           color: color-link
 
 .article-category
-  float: left
+  /*float: left*/
   line-height: 1em
   color: #ccc
   text-shadow: 0 1px #fff
@@ -121,7 +123,6 @@
 .article-title
   font-size: 25px
   text-decoration: none
-  text-align: left
   letter-spacing: -1px
   color: color-default
   line-height: line-height-title

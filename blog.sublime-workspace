@@ -389,7 +389,7 @@
 		"/D/Yizhe/Documents/Git/blog/source",
 		"/D/Yizhe/Documents/Git/blog/source/_posts",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial",
@@ -399,21 +399,25 @@
 	],
 	"file_history":
 	[
-		"/D/Yizhe/Documents/Git/blog/_config.yml",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/comment.ejs",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/article.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/article.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/_config.yml",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-2.md",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/layout.ejs",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-debouncing-switch.md",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/01/Breadth-First-Traversal-with-Queue.md",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Recursion-and-Stack-memory.md",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Corner-cases-for-binary-trees.md",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/DFS-in-Binary-Tree.md",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-1.md",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_widget/recent_posts.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_variables.styl",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/01/Breadth-First-Traversal-with-Queue.md",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/post/thumbnail.ejs",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10/Create-a-2-dimensional-Array-in-JavaScript.md",
+		"/D/Yizhe/Documents/Git/blog/_config.yml",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-2.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-1.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-debouncing-switch.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Run-Length-Encoding-algorithm-for-Strings.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Recursion-and-Stack-memory.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/DFS-in-Binary-Tree.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/02/Corner-cases-for-binary-trees.md",
+		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/01/Array-partition-with-two-pointers.md",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/comment.ejs",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/article.ejs",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/layout.ejs",
+		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_widget/recent_posts.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/sidebar.styl",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-Bouncing-Switch.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Build-personal-blog-with-Hexo-Part-2.md",
@@ -432,7 +436,6 @@
 		"/D/Yizhe/Documents/Git/blog/source/_posts/Build-personal-blog-with-Hexo.md",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/CNAME",
 		"/D/Yizhe/Documents/Git/blog/public/_posts/Build-personal-blog-with-Hexo/index.html",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/post/thumbnail.ejs",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/style.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/source/css/_partial/header.styl",
 		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial/footer.ejs",
@@ -523,10 +526,7 @@
 		"/D/Yizhe/Documents/WebService/payment/js/app.js",
 		"/D/Yizhe/Documents/WebService/payment/views/welcome/set-language.html",
 		"/D/Yizhe/Documents/Leetcode_JavaScript/views/array/problems.html",
-		"/D/Yizhe/Documents/WebService/payment/js/modules/welcome.js",
-		"/D/Yizhe/Documents/WebService/payment/views/welcome/home.html",
-		"/D/Yizhe/Documents/WebService/payment/views/welcome/login.html",
-		"/Users/yizhewang/Downloads/routing.sh"
+		"/D/Yizhe/Documents/WebService/payment/js/modules/welcome.js"
 	],
 	"find":
 	{
@@ -544,6 +544,11 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"thumbnail-default-small",
+			"item-thum",
+			"background-p",
+			"/blog/img",
+			"img",
 			"page",
 			"pacity",
 			"opacity",
@@ -601,6 +606,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"/img",
+			"/blog/img",
 			"Leetcode",
 			"&gt;",
 			"&lt;",
@@ -663,7 +670,7 @@
 	"project": "blog.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":

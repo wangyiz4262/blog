@@ -45,6 +45,6 @@ use_google_apis: false
 # Miscellaneous
 sitemap: /sitemap.xml
 google_analytics:
-favicon: /favicon.png
+favicon: /img/favicon.ico
 fb_admins:
 fb_app_id:

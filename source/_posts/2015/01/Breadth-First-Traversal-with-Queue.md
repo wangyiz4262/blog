@@ -7,8 +7,6 @@ tags:
 - tree and graph
 - stack and queue
 ---
-![](/img/leetcode-tree.jpg)
-
 Breadth-First Traversal can be used in many places, such as traversing level-by-level in a binary tree, or BFS in a graph. All those are implemented with a Queue.
 [Binary Tree Level Order Traversal](https://oj.leetcode.com/problems/binary-tree-level-order-traversal/)
 [Binary Tree Level Order Traversal II](https://oj.leetcode.com/problems/binary-tree-level-order-traversal-ii/)
