@@ -1,10 +1,10 @@
 title: DFS in Binary Tree
 date: 2015-02-04 16:58:00
 categories:
-- Algorithms
+- Coding
 tags:
 - leetcode
-- tree and graph
+- data structure
 
 ---
 ![](/img/leetcode-tree.jpg)

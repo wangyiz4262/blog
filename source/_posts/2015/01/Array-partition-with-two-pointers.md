@@ -1,10 +1,10 @@
 title: Array partition with two pointers
 date: 2015-01-28 16:00:06
 categories: 
-- Algorithms
+- Coding
 tags:
 - leetcode
-- array
+- data structure
 ---
 ![](/img/leetcode-array.jpg)
 Some problem are using this template with minor alternation, such as:

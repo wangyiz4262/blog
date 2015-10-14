@@ -1,0 +1,2 @@
+User-agent: no-image-crawling
+Disallow: /img/

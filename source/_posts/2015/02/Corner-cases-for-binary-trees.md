@@ -1,10 +1,10 @@
 title: Corner cases for binary trees
 date: 2015-02-05 16:55:37
 categories:
-- Algorithms
+- Coding
 tags:
 - leetcode
-- tree and graph
+- data structure
 ---
 ![](/img/leetcode-tree.jpg)
 When doing LeetCode problems, some corner cases should be considered when traversing through the tree, otherwise unexpected errors shall appear. Examples:

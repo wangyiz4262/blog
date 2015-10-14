@@ -1,11 +1,9 @@
 title: Create a 2-dimensional Array in JavaScript
 categories:
-  - Algorithms
+  - Coding
 tags:
-  - languages
-      + javascript
-  - leetcode
-  - array
+  - javascript
+  - data structure
 date: 2015-10-02 12:59:15
 ---
 When I tried to create a two-dimensional array today, I surprisingly discovered that there is no built-in function which can help us to create two-dimensional array in JavaScript.

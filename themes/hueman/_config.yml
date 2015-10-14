@@ -6,7 +6,6 @@ logo:
 # Header
 menu:
   home: /
-  resume: http://wangyizhe.net/resume/
 
 # Article list grouped by year
 groupByYear: true
@@ -29,13 +28,14 @@ social_links:
 widgets:
 - recent_posts
 - category
-#- archive
+- archive
 - tag
 #- tagcloud
 - links
 
 # Links
 links:
+  Resume: http://wangyizhe.net/resume
   LeetCode: https://leetcode.com/
   Hexo: http://hexo.io
 

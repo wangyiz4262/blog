@@ -1,11 +1,10 @@
 title: Recursion and Stack memory
 date: 2015-02-07 17:02:07
 categories:
-- Algorithms
+- Coding
 tags:
 - leetcode
-- tree and graph
-- stack and queue
+- data structure
 ---
 ![](/img/leetcode-stack.png)
 
