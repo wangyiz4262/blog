@@ -25,18 +25,18 @@ Congratulations! You've successfully created your blog repository!
 Open Git Bash if you are using Windows, or open simply Terminal if you are using Linux or Mac.
 
 2. set your username and email
-```
+```bash
 git config --global user.name  "YourName" 
 git config --global user.email  "YourEmail@Address" 
 ```
 
 3. Generate SSH key
-```
+```bash
 ssh-keygen -t rsa -C "YourEmail@Address"
 ```
 
 Then it will show some lines on the screen
-```
+```bash
 Generating public/private rsa key pair.
 Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):
 ```
@@ -45,6 +45,7 @@ Simply continue. After this, the system will ask for a passphrase. You may leave
 Enter passphrase (empty for no passphrase): 
 Enter same passphrase again:
 ```
+
 ![](/img/blog-ssh-key.png)
 
 4. Add your public key on GitHub
@@ -57,7 +58,7 @@ Now open the the "id_rsa.pub" file we mentioned before with any text editor you 
 
 5. Test
 Enter the following commands in Terminal:
-```
+```bash
 $ ssh -T git@github.com
 ```
 When you will see something as below, input "yes", and enter.

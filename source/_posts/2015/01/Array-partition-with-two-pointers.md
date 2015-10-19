@@ -13,7 +13,7 @@ Some problem are using this template with minor alternation, such as:
 [Sort Letters by Case](http://lintcode.com/en/problem/sort-letters-by-case/)
 [Sort Colors](http://lintcode.com/zh-cn/problem/sort-colors/)
 
-```
+```java
 public int partitionArray(int[] nums, int left, int right, int pivot) {
     if (nums == null || nums.length == 0) {
         return 0;

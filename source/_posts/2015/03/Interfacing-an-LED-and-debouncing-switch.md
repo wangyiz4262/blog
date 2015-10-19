@@ -13,7 +13,7 @@ Circuit Diagram:
 ![](/img/iot-circut_switch.png)
 
 Code:
-```
+```python
 from time import sleep
 import RPi.GPIO as GPIO
  
@@ -48,7 +48,7 @@ Findings:
 ### Debounce the button with better software support or use interrupts
 
 Code:
-```
+```python
 import RPi.GPIO as GPIO
 from time import sleep
  

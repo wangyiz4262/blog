@@ -12,7 +12,7 @@ tags:
 Let’s think about this problem: [Sum Root to Leaf Numbers](https://oj.leetcode.com/problems/sum-root-to-leaf-numbers/).
 
 A general solution is like below:
-```
+```java
 public int sumNumbers(TreeNode root) {
     if (root == null) {
         return 0;

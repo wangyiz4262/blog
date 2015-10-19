@@ -12,7 +12,7 @@ When doing LeetCode problems, some corner cases should be considered when traver
 [Same Tree](https://oj.leetcode.com/problems/same-tree/)
 
 The following code takes [Symmetric Tree](https://oj.leetcode.com/problems/symmetric-tree/) as an example:
-```
+```java
 public void method(TreeNode root) {
     if (root == null) {
         return something;

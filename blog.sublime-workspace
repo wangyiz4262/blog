@@ -389,17 +389,26 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Yizhe/Documents/Git/blog",
-		"/D/Yizhe/Documents/Git/blog/source",
-		"/D/Yizhe/Documents/Git/blog/source/_posts",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015",
-		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout",
-		"/D/Yizhe/Documents/Git/blog/themes/hueman/layout/_partial"
+		"/Users/Yizhe/Documents/Git/blog",
+		"/Users/Yizhe/Documents/Git/blog/source",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015"
 	],
 	"file_history":
 	[
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-2.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/09/Build-personal-blog-with-Hexo-Part-1.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/03/Interfacing-an-LED-and-debouncing-switch.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/02/Run-Length-Encoding-algorithm-for-Strings.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/02/Recursion-and-Stack-memory.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/02/DFS-in-Binary-Tree.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/02/Corner-cases-for-binary-trees.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/01/Breadth-First-Traversal-with-Queue.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/01/Array-partition-with-two-pointers.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/10/Why-my-a-tag-can-not-be-clicked.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/10/Create-a-2-dimensional-Array-in-JavaScript.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_trash/Why-my-a-tag-can-not-be-clicked.md",
+		"/Users/Yizhe/Documents/Git/blog/source/_posts/2015/10/Why-a-tag-not-working.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10/TCP-3-way-Handshake.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10/Internet-protocols.md",
 		"/D/Yizhe/Documents/Git/blog/source/_posts/2015/10/Expression-vs-Statement.md",
@@ -514,20 +523,7 @@
 		"/D/Yizhe/Documents/Leetcode_JavaScript/js/questions/problemList.js",
 		"/D/Yizhe/Documents/Leetcode_JavaScript/js/questions/problemDescriptions.js",
 		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/reverse-linked-list.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/reverse-linked-list-ii.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/index.html",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/plus-one.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/views/problem_solution.html",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/remove-element.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/remove-elements.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/problemList.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/problemDescriptions.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/hashtable/valid-sudoku.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/hashtable/happy-number.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/functions.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/categorizedProblemList.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/array/contains-duplicate.js",
-		"/D/Yizhe/Documents/Leetcode_JavaScript/js/array/rotate-array.js"
+		"/D/Yizhe/Documents/Leetcode_JavaScript/js/solutions/reverse-linked-list-ii.js"
 	],
 	"find":
 	{

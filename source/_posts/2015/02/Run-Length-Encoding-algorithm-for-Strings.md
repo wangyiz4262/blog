@@ -8,7 +8,7 @@ tags:
 ---
 ![](/img/leetcode-string.png)
 Imagine we need to compress a string “1111422311” into “4114221321”, which means “four ones, one four, two twos, one three, two ones”. Here is the implementation for this functionality:
-```
+```java
 public String compress(String str)  {
     if (str == null || str.length() == 0) {
         return null;

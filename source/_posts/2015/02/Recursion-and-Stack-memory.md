@@ -10,7 +10,7 @@ tags:
 
 When I was thinking about the problem [Validate Binary Search Tree](https://oj.leetcode.com/problems/validate-binary-search-tree/), my code runs like this:
 
-```
+```java
 public boolean isValidBST(TreeNode root) {
     TreeNode previous = null;
     return helper(root, previous);

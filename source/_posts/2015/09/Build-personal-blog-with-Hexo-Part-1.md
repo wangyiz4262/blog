@@ -36,7 +36,7 @@ You may find detailed installation instruction on the website above.
 #### Install Hexo
 If you are using Windows, then you will have Git Bash installed when you were installing Git just now. Open it.
 If you are using Mac or Linux, you can directly open the Terminal app, and enter the following:
-```
+```bash
 $ npm install -g hexo
 ```
 
@@ -46,20 +46,20 @@ $ npm install -g hexo
 #### Initiate your blog
 
 Now go to any directory you like, say <code>D:\blog</code>. If you are using Windows, press down Shift key, and right click on empty area, select <code>Open command window here</code> in the pop-up menu. If you are using Mac or Linux, just open Terminal and direct to the directory you specified. Then enter following codes:
-```
+```bash
 $ hexo init
 $ npm install
 $ npm install hexo-deployer-git --save
 ```
 
 And now, you have a preliminary blog set up. You may run following codes to view the result:
-```
+```bash
 $ hexo g
 $ hexo s
 ```
 
 You will see a line of code says 
-```
+```bash
 INFO  Hexo is running at http://0.0.0.0:4000/. Press Ctrl+C to stop.
 ```
 Then you only need to open [http://localhost:4000](http://localhost:4000) in your browser, and welcome to your new blog!

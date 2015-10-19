@@ -13,7 +13,7 @@ Breadth-First Traversal can be used in many places, such as traversing level-by-
 [Word Ladder](https://oj.leetcode.com/problems/word-ladder/)
 
 Take binary tree level-by-level traverse for example, we can therefore have this template as a general summary:
-```
+```java
 public ArrayList<List<Integer>> levelOrder(TreeNode root) {
     ArrayList<List<Integer>>  result = new ArrayList<ArrayList<Integer>>();
  
