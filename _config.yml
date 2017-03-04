@@ -8,7 +8,7 @@ subtitle: Geeks never think alike.
 description: Yizhe's blog
 author: Yizhe Wang
 language: en
-timezone:
+timezone: America/New_York
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -41,7 +41,7 @@ highlight:
   enable: true
   line_number: true
   auto_detect: true
-  tab_replace: 
+  tab_replace:
 
 # Category & Tag
 default_category: uncategorized
@@ -75,4 +75,4 @@ deploy:
   type: git
   repo:
     github: git@github.com:wangyiz4262/blog.git,gh-pages
-    gitcafe: git@gitcafe.com:wangyiz4262/blog.git,gitcafe-pages
+    coding: git@git.coding.net:wangyiz4262/blog.git,coding-pages

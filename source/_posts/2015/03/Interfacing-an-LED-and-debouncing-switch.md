@@ -6,11 +6,11 @@ tags:
   - raspberry pi
   - python
 ---
-![](/img/iot-debounce_switch.jpg)
+![](/img/2015/03/iot-debounce_switch.jpg)
 ### Setup the circuitry and program for Interfacing an LED and Switch with Raspberry Pi
 
 Circuit Diagram:
-![](/img/iot-circut_switch.png)
+![](/img/2015/03/iot-circut_switch.png)
 
 Code:
 ```python

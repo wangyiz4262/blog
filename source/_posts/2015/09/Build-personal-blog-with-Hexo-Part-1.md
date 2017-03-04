@@ -5,7 +5,7 @@ categories:
 tags: 
 - markdown
 ---
-![](/img/blog-hexo.png)
+![](/img/2015/09/blog-hexo.png)
 
 ## <p align="center">Part 1: Install Hexo</p>
 ### Preface
@@ -64,6 +64,6 @@ INFO  Hexo is running at http://0.0.0.0:4000/. Press Ctrl+C to stop.
 ```
 Then you only need to open [http://localhost:4000](http://localhost:4000) in your browser, and welcome to your new blog!
 
-![](/img/blog-theme-landscape.jpg)
+![](/img/2015/09/blog-theme-landscape.jpg)
 
 To Be Continued ...

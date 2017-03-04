@@ -6,7 +6,7 @@ tags:
 - leetcode
 - data structure
 ---
-![](/img/leetcode-array.jpg)
+![](/img/2015/01/leetcode-array.jpg)
 Some problem are using this template with minor alternation, such as:
 [Quick Sort](http://examples.javacodegeeks.com/core-java/quicksort-algorithm-in-java-code-example/)
 [Partition Array](http://lintcode.com/en/problem/partition-array)

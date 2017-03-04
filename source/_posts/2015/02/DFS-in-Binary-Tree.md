@@ -7,7 +7,7 @@ tags:
 - data structure
 
 ---
-![](/img/leetcode-tree.jpg)
+![](/img/2015/02/leetcode-tree.jpg)
 
 Let’s think about this problem: [Sum Root to Leaf Numbers](https://oj.leetcode.com/problems/sum-root-to-leaf-numbers/).
 

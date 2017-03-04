@@ -5,18 +5,18 @@ categories:
 tags: 
 - markdown
 ---
-![](/img/blog-dnspod.jpg)
+![](/img/2015/09/blog-dnspod.jpg)
 
 ## <p align="center">Part 2: Deploy to GitHub</p>
 ### Configure GitHub
 1. In the upper-right corner of any page, click **+**, and then click **New repository**.
-![](/img/blog-github-repo-create.png)
+![](/img/2015/09/blog-github-repo-create.png)
 
 2. Enter name for your blog project, which must be following this pattern: &lt;username&gt;.github.io
-![](/img/blog-github-repo-name.png)
+![](/img/2015/09/blog-github-repo-name.png)
 
 3. Click **Create repository**.
-![](/img/blog-github-create-repo-button.png)
+![](/img/2015/09/blog-github-create-repo-button.png)
 
 Congratulations! You've successfully created your blog repository!
 
@@ -46,13 +46,13 @@ Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
 ```
 
-![](/img/blog-ssh-key.png)
+![](/img/2015/09/blog-ssh-key.png)
 
 4. Add your public key on GitHub
 Now you should have a hidden directory in your home directory named ".ssh", whichin this hidden directory, two files should be generated with some string similar to "id_rsa" and "id_rsa.pub". The second one is what we need to copy to GitHub. 
 
 So log in to your account on GitHub, click on the gear-shaped button on the upper-right corner, which will bring you to the setting page. Now find "SSH Keys" on the left hand-side menu, and click on "Add SSH Key".
-![](/img/blog-ssh-to-github.png)
+![](/img/2015/09/blog-ssh-to-github.png)
 
 Now open the the "id_rsa.pub" file we mentioned before with any text editor you like, copy all the content within, and paste it in the textbox on the webpage. Confirm the change.
 

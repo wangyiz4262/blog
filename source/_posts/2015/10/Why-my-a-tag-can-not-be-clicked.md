@@ -5,7 +5,7 @@ tags:
   - html & css
 date: 2015-10-19 12:26:15
 ---
-![](/img/html-anchor-tag.png)
+![](/img/2015/10/html-anchor-tag.png)
 
 I wrote some codes below:
 ```html
@@ -16,7 +16,7 @@ I wrote some codes below:
 ```
 
 When I rendered the html, to my surprise, the button was not clickable, neither could I select any text on it.
-![](/img/html-position-absolute-z-index.png)
+![](/img/2015/10/html-position-absolute-z-index.png)
 
 This is interesting. So I looked back at the css associated with this tag, which wrote as following:
 ```css

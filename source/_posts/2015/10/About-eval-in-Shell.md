@@ -6,7 +6,7 @@ tags:
   - shell
 date: 2015-10-20 22:23:00
 ---
-![](/img/os-linux-shell.png)
+![](/img/2015/10/os-linux-shell.png)
 The textbook says in bash scripting, `eval` plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with `$` will be translated to whatever its value is.
 
 Let's see some examples.

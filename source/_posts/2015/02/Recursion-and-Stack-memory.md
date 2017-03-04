@@ -6,7 +6,7 @@ tags:
 - leetcode
 - data structure
 ---
-![](/img/leetcode-stack.png)
+![](/img/2015/02/leetcode-stack.png)
 
 When I was thinking about the problem [Validate Binary Search Tree](https://oj.leetcode.com/problems/validate-binary-search-tree/), my code runs like this:
 

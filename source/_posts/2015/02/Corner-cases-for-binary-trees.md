@@ -6,7 +6,7 @@ tags:
 - leetcode
 - data structure
 ---
-![](/img/leetcode-tree.jpg)
+![](/img/2015/02/leetcode-tree.jpg)
 When doing LeetCode problems, some corner cases should be considered when traversing through the tree, otherwise unexpected errors shall appear. Examples:
 [Symmetric Tree](https://oj.leetcode.com/problems/symmetric-tree/)
 [Same Tree](https://oj.leetcode.com/problems/same-tree/)
