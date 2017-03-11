@@ -1,7 +1,8 @@
 <% if(index) { %>
   <article class="article article-summary">
     <div class="article-summary-inner">
-      <!--<%- partial('post/thumbnail') %>-->
+
+      <%//- partial('post/thumbnail') %>
       <div class="article-meta">
         <p class="category"><%- list_categories(post.categories, {show_count: false, depth:2, class: 'article-category', style: 'none', separator: '<i class="icon fa fa-angle-right"></i>'}) %></p>
         <p class="date"><time datetime="<%= date_xml(post.date) %>" itemprop="datePublished"><%= date(post.date) %></time></p>
@@ -28,7 +29,7 @@
 <% } else { %>
   <article id="<%= post.layout %>-<%= post.slug %>" class="article article-single article-type-<%= post.layout %>" itemscope itemprop="blogPost">
     <div class="article-inner">
-      <!-- <%- partial('post/gallery') %> -->
+      <%//- partial('post/gallery') %>
       <% if (post.link || post.title){ %>
         <header class="article-header">
           <%- partial('post/title', {class_name: 'article-title'}) %>
@@ -42,8 +43,9 @@
       </div>
       <footer class="article-footer">
         <a data-url="<%- post.permalink %>" data-id="<%= post._id %>" class="article-share-link"><i class="fa fa-share"></i><%=__('article.share')%></a>
+
         <% if (post.comments && config.disqus_shortname){ %>
-          <a href="<%- post.permalink %>#comments" class="article-comment-link"><i class="fa fa-comments"></i><%=__('article.comments')%></a>
+          <!--<a href="<%//- post.permalink %>#comments" class="article-comment-link"><i class="fa fa-comments"></i><%//=__('article.comments')%></a>-->
         <% } %>
         <%- partial('post/tag') %>
       </footer>
@@ -51,7 +53,7 @@
   </article>
 
   <% if (post.comments) { %>
-    <%- partial('comment', {post: page}) %>
+    <%//- partial('comment', {post: page}) %>
   <% } %>
 
 <% } %>
