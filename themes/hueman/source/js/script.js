@@ -80,18 +80,18 @@
   }
 
   //Back to top
-  $("#back-to-top").on('click', function(){  
+  $("#back-to-top").on('click', function(){
     $('body,html').animate({scrollTop:0}, 600);
   });
 
   // Baidu in-site search
-  (function() {
-    document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));
-    var bdcs = document.createElement('script');
-    bdcs.type = 'text/javascript';
-    bdcs.async = true;
-    bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=10252577829139496308' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date() / 3600000);
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(bdcs, s);
-  })();
+  // (function() {
+  //   document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));
+  //   var bdcs = document.createElement('script');
+  //   bdcs.type = 'text/javascript';
+  //   bdcs.async = true;
+  //   bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=10252577829139496308' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date() / 3600000);
+  //   var s = document.getElementsByTagName('script')[0];
+  //   s.parentNode.insertBefore(bdcs, s);
+  // })();
 })(jQuery);
