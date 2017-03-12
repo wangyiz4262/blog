@@ -1,7 +1,7 @@
 title: Breadth-First Traversal with Queue
 date: 2015-01-29 16:42:41
 categories:
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure

@@ -1,7 +1,7 @@
 title: DFS in Binary Tree
 date: 2015-02-04 16:58:00
 categories:
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure

@@ -1,7 +1,7 @@
 title: Corner cases for binary trees
 date: 2015-02-05 16:55:37
 categories:
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure

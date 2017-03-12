@@ -94,4 +94,15 @@
   //   var s = document.getElementsByTagName('script')[0];
   //   s.parentNode.insertBefore(bdcs, s);
   // })();
+
+  // Google custom search
+  // (function() {
+  //   var cx = '000144979510574537097:hull8jwat40';
+  //   var gcse = document.createElement('script');
+  //   gcse.type = 'text/javascript';
+  //   gcse.async = true;
+  //   gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+  //   var s = document.getElementsByTagName('script')[0];
+  //   s.parentNode.insertBefore(gcse, s);
+  // })();
 })(jQuery);

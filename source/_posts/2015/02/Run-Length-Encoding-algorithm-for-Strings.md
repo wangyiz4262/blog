@@ -1,7 +1,7 @@
 title: Run-Length Encoding algorithm for Strings
 date: 2015-02-04 16:52:31
 categories:
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure

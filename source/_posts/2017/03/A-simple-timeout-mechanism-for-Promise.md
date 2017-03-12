@@ -1,6 +1,6 @@
 title: A simple timeout mechanism for Promise
 categories:
-  - Coding
+  - Languages
 tags:
   - javascript
   - promise

@@ -1,6 +1,6 @@
 title: Rejection in Promise
 categories:
-  - Coding
+  - Languages
 tags:
   - javascript
   - promise

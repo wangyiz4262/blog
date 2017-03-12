@@ -1,6 +1,6 @@
 title: Create a 2-dimensional Array in JavaScript
 categories:
-  - Coding
+  - Languages
 tags:
   - javascript
   - data structure

@@ -1,6 +1,6 @@
 title: TCP 3-way Handshake
 categories:
-- Internet
+- Network
 tags:
 - protocols
 date: 2015-10-13 21:36:36

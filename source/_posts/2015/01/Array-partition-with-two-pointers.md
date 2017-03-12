@@ -1,7 +1,7 @@
 title: Array partition with two pointers
 date: 2015-01-28 16:00:06
 categories: 
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure

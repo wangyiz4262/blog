@@ -1,6 +1,6 @@
 title: Extra white space on my page
 categories:
-  - Coding
+  - Development
 tags:
   - html & css
 date: 2015-10-21 15:17:31

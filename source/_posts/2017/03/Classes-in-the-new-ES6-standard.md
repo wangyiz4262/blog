@@ -1,18 +1,19 @@
 title: Classes in the new ES6 standard
 categories:
-  - Coding
+  - Languages
 tags:
   - javascript
   - es6
+  - data structure
 date: 2017-03-11 10:15:17
 ---
 ![](/img/2017/03/es6.png)
 
 Class is a new feature introduced into the new ECMAScript 2015 standard, also known as ES6.
 
-I thought it is just a move for the JavaScript to adapt to the Object-oriented world. It may be so, however, I found with the declaration of classes, I became more clear about several concepts that confused me a lot in the functional world.
+I thought it was just a move for the JavaScript to adapt to the Object-oriented world. It may be so, however, I found with the declaration of classes, I became more clear about several concepts that confused me a lot in the functional world.
 
-First, a class in JS is still a function, which also examplifies the idea that functions are first-class citizen in the JS world.
+First, a class in JS is still a function, which also exemplifies the idea that functions are first-class citizen in the JS world.
 
 ```javascript
 class Foo {
@@ -31,7 +32,7 @@ class Foo {
 'function'
 ```
 
-Second, we know that an important concept in JS is prototype. We were told that it is better for an object to inherit a function from its ptototype instead of defining inside the constructor, e.g.
+Second, we know that an important concept in JS is prototype. We were told that it is better for an object to inherit a function from its prototype instead of defining inside the constructor, e.g.
 
 ```javascript
 var Foo = function() {

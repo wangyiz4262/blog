@@ -1,7 +1,7 @@
 title: Recursion and Stack memory
 date: 2015-02-07 17:02:07
 categories:
-- Coding
+- Coding Practice
 tags:
 - leetcode
 - data structure
