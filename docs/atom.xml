@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Brainstorm</title>
+  <subtitle>Geeks never think alike.</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://blog.wangyizhe.net/"/>
+  <updated>2017-03-12T16:22:48.000Z</updated>
+  <id>http://blog.wangyizhe.net/</id>
+  
+  <author>
+    <name>Yizhe Wang</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Iterations in JavaScript Promise</title>
+    <link href="http://blog.wangyizhe.net/2017/03/Iterations-in-JavaScript-Promise/"/>
+    <id>http://blog.wangyizhe.net/2017/03/Iterations-in-JavaScript-Promise/</id>
+    <published>2017-03-12T03:46:43.000Z</published>
+    <updated>2017-03-12T16:22:48.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2017/03/promise.png" alt=""><br>Imagine we have an async task below that needs to be done for several times in sequence.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">asyncJob</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span> ; i &lt; <span class="number">4</span>;) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i++);</span><br><span class="line">        setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">        &#125;, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>However the result will be like:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span> second has passed.</span><br><span class="line"><span class="number">4</span> second has passed.</span><br><span class="line"><span class="number">4</span> second has passed.</span><br><span class="line"><span class="number">4</span> second has passed.</span><br></pre></td></tr></table></figure></p>
+<p>This is due to the fact that the async part will be pushed to the execution stack, which is yet to be run. And when it starts to run, the incrementer has become 4.</p>
+<p>A simple solution might be changing <code>var i</code> to be <code>let i</code>:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">asyncJob</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span> ; i &lt; <span class="number">4</span>;) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(i++);</span><br><span class="line">        setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">        &#125;, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The new keyword <code>let</code> will work on the block level and somehow make sure the variable in the block is properly assigned with the correct value:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">1</span> second has passed.</span><br><span class="line"><span class="number">2</span> second has passed.</span><br><span class="line"><span class="number">3</span> second has passed.</span><br><span class="line"><span class="number">4</span> second has passed.</span><br></pre></td></tr></table></figure></p>
+<p>But <code>setTimeout</code> still runs at the end. What if I want the output is like this without changing the codes within the loop?<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">1</span> second has passed.</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span> second has passed.</span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span> second has passed.</span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span> second has passed.</span><br></pre></td></tr></table></figure></p>
+<p>An approach might be using Promise, and all operations will be wrapped by Promise:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">asyncJob</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve) =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(i++);</span><br><span class="line">                setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    resolve(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">                &#125;, <span class="number">1000</span>);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;)</span><br><span class="line">        .then(<span class="built_in">console</span>.log)</span><br><span class="line">        <span class="comment">/* repeated several times*/</span></span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve) =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(i++);</span><br><span class="line">                setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    resolve(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">                &#125;, <span class="number">1000</span>);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;)</span><br><span class="line">        .then(<span class="built_in">console</span>.log);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The result finally is what I are expecting. And key part, which makes sure the incrementer and time passed will print together, is returning a new Promise within each <code>.then()</code> method. It will not proceed to the next <code>.then()</code> until this Promise is fulfilled, meaning either resolved or rejected.</p>
+<p>And of course we can write 4 or even more <code>.then()</code> methods to contain them, but this is definitely not an optimal solution. A better approach might be using recursion.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i = <span class="number">0</span></span><br><span class="line">  , asyncJob = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve) =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(i++);</span><br><span class="line">                setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    resolve(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">                &#125;, <span class="number">1000</span>);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;)</span><br><span class="line">        .then(<span class="built_in">console</span>.log)</span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; <span class="number">4</span>) &#123;</span><br><span class="line">                asyncJob();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">asyncJob();</span><br></pre></td></tr></table></figure>
+<p>Here is another a small trick. We can take advantage of the <code>.catch()</code> method in Promise to skip the following <code>.then()</code>s.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i = <span class="number">0</span></span><br><span class="line">  , asyncJob = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">        .then(() =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (i === <span class="number">4</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(<span class="string">'Done with promise'</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve) =&gt; &#123;</span><br><span class="line">                    <span class="built_in">console</span>.log(i++);</span><br><span class="line">                    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                        resolve(<span class="string">`<span class="subst">$&#123;i&#125;</span> second has passed.`</span>);</span><br><span class="line">                    &#125;, <span class="number">1000</span>);</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        .then(<span class="built_in">console</span>.log)</span><br><span class="line">        .then(asyncJob)</span><br><span class="line">        .catch(err =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (err === <span class="string">'Done with promise'</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">asyncJob();</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2017/03/promise.png&quot; alt=&quot;&quot;&gt;&lt;br&gt;Imagine we have an async task below that needs to be done for several times in sequence.&lt;b
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+      <category term="javascript" scheme="http://blog.wangyizhe.net/tags/javascript/"/>
+    
+      <category term="promise" scheme="http://blog.wangyizhe.net/tags/promise/"/>
+    
+      <category term="recursion" scheme="http://blog.wangyizhe.net/tags/recursion/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Classes in the new ES6 standard</title>
+    <link href="http://blog.wangyizhe.net/2017/03/Classes-in-the-new-ES6-standard/"/>
+    <id>http://blog.wangyizhe.net/2017/03/Classes-in-the-new-ES6-standard/</id>
+    <published>2017-03-11T15:15:17.000Z</published>
+    <updated>2017-03-12T14:18:14.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2017/03/es6.png" alt=""></p>
+<p>Class is a new feature introduced into the new ECMAScript 2015 standard, also known as ES6.</p>
+<p>I thought it was just a move for the JavaScript to adapt to the Object-oriented world. It may be so, however, I found with the declaration of classes, I became more clear about several concepts that confused me a lot in the functional world.</p>
+<p>First, a class in JS is still a function, which also exemplifies the idea that functions are first-class citizen in the JS world.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        <span class="keyword">this</span>.foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'foo'</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    bar() &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'bar'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; console.log(typeof Foo)</span><br><span class="line"><span class="string">'function'</span></span><br></pre></td></tr></table></figure>
+<p>Second, we know that an important concept in JS is prototype. We were told that it is better for an object to inherit a function from its prototype instead of defining inside the constructor, e.g.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'foo'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Foo.prototype.bar = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bar'</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>The <code>bar</code> method was defined in the prototype of <code>Foo</code>, and will be attached everytime <code>Foo</code> is instantiated. In the new ES6 standard, we can also define prototype methods. We only need to write them inside the class definition but outside the constructor function, like the first example shows.</p>
+<p>And as explained by the name, <code>constructor</code> function inside class definition is the constructor which will be used to instantiate an object.</p>
+<p>So we got the idea. The new class data structure is just an abstract encapsulation of our previous practices with functions. We can define constructors and prototypes all inside this class.</p>
+<p>Third, we also know that everything in JS are objects, including functions. We can even attach properties to a function like the following:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'foo'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Foo.yo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'yo!'</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>See, this is different from the <code>bar</code> method, which is bound to the prototype of <code>Foo</code>. This <code>yo</code> method is bound directly to <code>Foo</code> as an object property. </p>
+<p>How do we call this function? Simple. Instead of instantiating an object first, we just call it directly like this:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; Foo.yo();</span><br><span class="line">yo!</span><br></pre></td></tr></table></figure>
+<p>But if we get an instance of <code>Foo</code> and call <code>yo</code> against that instance, we will get an error:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; var obj = new Foo();</span><br><span class="line">&gt;&gt; obj.yo();</span><br><span class="line">TypeError: obj.yo is not a <span class="keyword">function</span></span><br></pre></td></tr></table></figure>
+<p>This is pretty similar to the static methods in the Object-oriented world. That’s right! To define a such function within a class definition, we only need to add a ‘static’ keyword in front of the function:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        <span class="keyword">this</span>.foo = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'foo'</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    bar() &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'bar'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    static yo() &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'yo!'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Finally, how do we actually call this functions?</p>
+<p>For functions defined inside constructor, of course we need to instantiate an object, and same goes for function defined on prototype:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; <span class="keyword">var</span> obj = <span class="keyword">new</span> Foo();</span><br><span class="line">&gt;&gt; obj.foo()</span><br><span class="line">foo</span><br><span class="line">&gt;&gt; obj.bar()</span><br><span class="line">bar</span><br></pre></td></tr></table></figure>
+<p>The static methods should be called directly with the class name as explained already: <code>Foo.yo()</code>.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2017/03/es6.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Class is a new feature introduced into the new ECMAScript 2015 standard, also known as ES6
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="es6" scheme="http://blog.wangyizhe.net/tags/es6/"/>
+    
+      <category term="javascript" scheme="http://blog.wangyizhe.net/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>A simple timeout mechanism for Promise</title>
+    <link href="http://blog.wangyizhe.net/2017/03/A-simple-timeout-mechanism-for-Promise/"/>
+    <id>http://blog.wangyizhe.net/2017/03/A-simple-timeout-mechanism-for-Promise/</id>
+    <published>2017-03-04T02:01:42.000Z</published>
+    <updated>2017-03-12T14:09:19.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2017/03/promise.png" alt=""></p>
+<p>Sometimes we need to do some asynchronous jobs which may last for a while, like submitting an Ajax POST request. And if there is problem with connection, we may not get response in time as expected. Therefore we need a mechanism to detect timeout so as to avoid endless waiting or even worse situation.</p>
+<p>Here is a simple implementation of such mechanism:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> delayedOperation = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> asyncPromise = <span class="built_in">Promise</span>.resolve()</span><br><span class="line">            .then(() =&gt; &#123;</span><br><span class="line">                resolve(doStuffAsync());</span><br><span class="line">            &#125;)</span><br><span class="line">        , delayedPromise = <span class="keyword">new</span> <span class="built_in">Promise</span>((resolve, reject) =&gt; &#123;</span><br><span class="line">            setTimeout(() =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(<span class="string">'timeout'</span>);</span><br><span class="line">                reject(<span class="string">'Timeout'</span>);</span><br><span class="line">            &#125;, <span class="number">10000</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Promise</span>.race([openUrlPromise, delayedPromise]);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">delayedOperation()</span><br><span class="line">.then(<span class="built_in">console</span>.log)</span><br><span class="line">.catch(<span class="built_in">console</span>.log);</span><br></pre></td></tr></table></figure>
+<p>But story does not end here. When running this codes, even though <code>asyncPromise</code> does not last for more than 10000 ms, it will still give me a <code>timeout</code> console output.</p>
+<p>Shouldn’t the <code>Promise.race</code> just return <code>asyncPromise</code> and skip <code>delayedPromise</code>?</p>
+<p>Answer is YES and NO.</p>
+<p>When <code>asyncPromise</code> is fulfilled ahead of <code>delayedPromse</code>, indeed <code>Promise.race</code> will return <code>asyncPromise</code>, but <code>delayedPromise</code> will not just terminate. Instead, because of the <code>setTimeout()</code>, <code>delayedPromise</code> will be queued on the execution context and waited to complete. So at some point it will still give an output on the console.</p>
+<p>This is not some happy ending we would like see. To remedy this, a simple solution is of course not adding any additional codes except <code>reject()</code> inside the <code>setTimeout()</code>.</p>
+<p>Another shortcoming for this method is the <code>setTimeout</code> will drag the completion of the entire program onward. Therefore you may notice that the memory is not freed even though all operations have completed.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2017/03/promise.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Sometimes we need to do some asynchronous jobs which may last for a while, like submit
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+      <category term="javascript" scheme="http://blog.wangyizhe.net/tags/javascript/"/>
+    
+      <category term="promise" scheme="http://blog.wangyizhe.net/tags/promise/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Rejection in Promise</title>
+    <link href="http://blog.wangyizhe.net/2017/03/A-few-notes-about-Promise-in-JavaScript/"/>
+    <id>http://blog.wangyizhe.net/2017/03/A-few-notes-about-Promise-in-JavaScript/</id>
+    <published>2017-03-03T04:26:06.000Z</published>
+    <updated>2017-03-12T14:09:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2017/03/promise.png" alt=""></p>
+<p>I am always curious that if a Promise is rejected at any position, will the following then() still be executed? Consider the following codes as an example:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.reject(<span class="string">'rejected'</span>)</span><br><span class="line">.then(() =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'before resolve()'</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(<span class="string">'resolved'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">.then((msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'resolved inside 1st then()'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Resolved: <span class="subst">$&#123;msg&#125;</span>`</span>);</span><br><span class="line">&#125;, (msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'rejected inside 1st then()'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Rejected: <span class="subst">$&#123;msg&#125;</span>`</span>);</span><br><span class="line">&#125;)</span><br><span class="line">.then((msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'resolving inside 2nd then()'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Resolved: <span class="subst">$&#123;msg&#125;</span>`</span>);</span><br><span class="line">&#125;, (msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'rejecting inside 2nd then()'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Rejected: <span class="subst">$&#123;msg&#125;</span>`</span>);</span><br><span class="line">&#125;)</span><br><span class="line">.catch((msg) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'rejected in catch()'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Rejected: <span class="subst">$&#123;msg&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Result:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rejected inside <span class="number">1s</span>t <span class="function"><span class="title">then</span><span class="params">()</span></span></span><br><span class="line">Rejected: rejected</span><br><span class="line">resolving inside <span class="number">2</span>nd <span class="function"><span class="title">then</span><span class="params">()</span></span></span><br><span class="line">Resolved: undefined</span><br></pre></td></tr></table></figure>
+<p>It is clear that the rejection was caught in the second <code>then()</code>, and <code>Promise.resolve()</code> was not even executed. But once the rejection is caught in some place, everything went back to normal.</p>
+<p>Therefore to ensure that once rejected, the whole process stops running until termination, we should put a <code>catch()</code> method at the very end and do not catch the <code>reject()</code> inside any <code>then()</code> before it.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2017/03/promise.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;I am always curious that if a Promise is rejected at any position, will the following 
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+      <category term="javascript" scheme="http://blog.wangyizhe.net/tags/javascript/"/>
+    
+      <category term="promise" scheme="http://blog.wangyizhe.net/tags/promise/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Extra white space on my page</title>
+    <link href="http://blog.wangyizhe.net/2015/10/Extra-white-space-on-my-page/"/>
+    <id>http://blog.wangyizhe.net/2015/10/Extra-white-space-on-my-page/</id>
+    <published>2015-10-21T19:17:31.000Z</published>
+    <updated>2017-03-12T14:16:46.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>I recently created a <a href="http://wangyizhe.net/cheatsheets" target="_blank" rel="external">new site</a>, collecting some useful cheatsheets. But on the <a href="http://wangyizhe.net/cheatsheets/markdown" target="_blank" rel="external">page</a> regarding to topic of Markdown, a funny thing happened without giving me any clue of why. There was some empty space on the right-hand-side of screen.</p>
+<p><img src="/img/2015/10/html-white-space-on-the-right-side-of-page.png" alt=""></p>
+<p>It haunted me for several days. I tried out may possibilities, from screen size of iPhone 6 Plus, to 3-pixels-in-1 Retina Display issue, to viewport settings in meta tag, to disable and re-enable overflow property in css, etc. None of them worked, until I scroll it way down to the bottom and discovered a remarkably long line of code.</p>
+<p><img src="/img/2015/10/html-extra-long-line.png" alt=""></p>
+<p>There is the little devil!!!</p>
+<p>After changing this part, and refresh the page, the world is in peace…</p>
+<p>What a stupid mistake! But that’s the sort of things humans always do.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;I recently created a &lt;a href=&quot;http://wangyizhe.net/cheatsheets&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;new site&lt;/a&gt;, collecting some useful cheat
+    
+    </summary>
+    
+      <category term="Development" scheme="http://blog.wangyizhe.net/categories/Development/"/>
+    
+    
+      <category term="html &amp; css" scheme="http://blog.wangyizhe.net/tags/html-css/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>About eval in Shell</title>
+    <link href="http://blog.wangyizhe.net/2015/10/About-eval-in-Shell/"/>
+    <id>http://blog.wangyizhe.net/2015/10/About-eval-in-Shell/</id>
+    <published>2015-10-21T02:23:00.000Z</published>
+    <updated>2017-03-04T05:02:06.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/10/os-linux-shell.png" alt=""><br>The textbook says in bash scripting, <code>eval</code> plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with <code>$</code> will be translated to whatever its value is.</p>
+<p>Let’s see some examples.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ a=<span class="string">'10'</span></span><br><span class="line">$ b=a</span><br></pre></td></tr></table></figure>
+<p>Now b is assigned with <code>a</code>, and this <code>a</code> is simply a string, not a variable yet.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="variable">$a</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$b</span></span><br><span class="line">a</span><br></pre></td></tr></table></figure>
+<p>Now we execute these two variables in different ways:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$a</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ `<span class="variable">$a</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ $(<span class="variable">$a</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> <span class="variable">$a</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> `<span class="variable">$a</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="variable">$a</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ `<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ $(<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> <span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> `<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br></pre></td></tr></table></figure>
+<p>But if we now evaluate <code>\$$b</code>, as we know <code>\</code> will escape the <code>$</code> sign, something interesting will show up.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># experiment 1</span></span><br><span class="line">$ \$<span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 2</span></span><br><span class="line">$ `\$<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">99361</span>b</span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 3</span></span><br><span class="line">$ $(\$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 4</span></span><br><span class="line">$ <span class="built_in">eval</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 5</span></span><br><span class="line">$ <span class="built_in">eval</span> `\$<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">99361</span>b</span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 6</span></span><br><span class="line">$ <span class="built_in">eval</span> $(\$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br></pre></td></tr></table></figure>
+<p>Some conclusions may be drawn from the above experiments:</p>
+<ul>
+<li><p>Before each execution of command, the known variables in the expression will be converted to its value. As in experiment 1, <code>\$$b</code> is translated to <code>$a</code> before executing, then <code>$a</code> is executed as if it is a command, and apparently results in a not-found error. Another example would be</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> <span class="built_in">echo</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>  With <code>eval</code>, the entire expression will be evaluated twice. <code>\$$b</code> is translated to <code>$a</code> in the first place, then <code>echo $a</code> is executed. Similarly, <code>$a</code> is translated to <code>10</code> before this execution, and <code>10</code> is printed on screen as a result.</p>
+</li>
+<li><p>There is difference between experiment 1 and 4 is because that <code>\$$b</code> is actually executing <code>$a</code> as a command, while <code>eval \$$b</code> will first convert $b into a, then evaluates again from <code>$a</code> to <code>10</code>. Now <code>10</code> is executed as a command.</p>
+</li>
+<li><p><code>` `</code> and <code>$()</code> are called “command substitution”, which means the expression within will be evaluated and executed before the outside command gets in. The outside command usually is <code>echo</code>.</p>
+<ul>
+<li>It is said that <code>` `</code> and <code>$()</code> should be interchangeable, however it apparently is not, judging from experiment 2 and 3.</li>
+<li>From experiment 2 and 3, we could see that <code>$(\$$b)</code> seems to have been successfully translated <code>\$$b</code> into <code>$a</code>. But <code>`\$$b`</code> seems to have first converted <code>\$$</code> into <code>$$</code>, which is the process ID of the current shell, then concatenated ‘b’ at the end and return.</li>
+<li>Therefore a good guess is that <code>` `</code> grants higher priority to escaped characters than variables when evaluating.</li>
+<li>It is recommended to use <code>$()</code> instead of <code>` `</code> for command substitution.</li>
+</ul>
+</li>
+<li><p>Consider another example of using <code>eval</code> and <code>$()</code>:</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> <span class="built_in">echo</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="built_in">echo</span> \$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ $(<span class="built_in">echo</span> \$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>eval echo \$$b</code> evaluated <code>\$$b</code> to <code>$a</code>, then evaluated <code>$a</code> to its value <code>10</code> before echoing it out, finally echoed the result.</li>
+<li><code>eval $(echo \$$b)</code> did the first three steps the same as above, but it has one more step, which was what <code>$()</code> did, to execute the result. Therefore you got a not-found error message.</li>
+<li><code>$(echo \$$b)</code> did the same as the second example, except the double evaluation part. That is, first evaluate <code>\$$b</code> to <code>$a</code>, which is associated with “echo”; then echoed it out as a string “$a”; lastly, ran it as a command, and received a not-found error said “command ‘$a’ was not found”.</li>
+</ul>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/10/os-linux-shell.png&quot; alt=&quot;&quot;&gt;&lt;br&gt;The textbook says in bash scripting, &lt;code&gt;eval&lt;/code&gt; plays a role that the expres
+    
+    </summary>
+    
+      <category term="Operating System" scheme="http://blog.wangyizhe.net/categories/Operating-System/"/>
+    
+    
+      <category term="linux" scheme="http://blog.wangyizhe.net/tags/linux/"/>
+    
+      <category term="shell" scheme="http://blog.wangyizhe.net/tags/shell/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Why my &lt;a&gt; tag can not be clicked</title>
+    <link href="http://blog.wangyizhe.net/2015/10/Why-my-a-tag-can-not-be-clicked/"/>
+    <id>http://blog.wangyizhe.net/2015/10/Why-my-a-tag-can-not-be-clicked/</id>
+    <published>2015-10-19T16:26:15.000Z</published>
+    <updated>2017-03-12T14:16:48.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/10/html-anchor-tag.png" alt=""></p>
+<p>I wrote some codes below:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"../index.html"</span> <span class="attribute">id</span>=<span class="value">"return"</span>&gt;</span><span class="tag">&lt;<span class="title">button</span> <span class="attribute">class</span>=<span class="value">"btn"</span>&gt;</span>Return<span class="tag">&lt;/<span class="title">button</span>&gt;</span><span class="tag">&lt;/<span class="title">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">h1</span> <span class="attribute">id</span>=<span class="value">"toc_0"</span>&gt;</span>Typography<span class="tag">&lt;/<span class="title">h1</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>When I rendered the html, to my surprise, the button was not clickable, neither could I select any text on it.<br><img src="/img/2015/10/html-position-absolute-z-index.png" alt=""></p>
+<p>This is interesting. So I looked back at the css associated with this tag, which wrote as following:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="id">#return</span> <span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">position</span>:<span class="value"> absolute</span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">right</span>:<span class="value"> <span class="number">0</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">20px</span></span></span>;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>I set the position as absolute, and at the same time I set the parent div with position relative, in which way I’d like to make the button floating right. The button is displaying correctly, with correct color and shape. Nothing seemed wrong, except it could not be clicked.</p>
+<p>If I move the <code>&lt;h1&gt;</code> tag above the <code>&lt;a&gt;</code> tag, the button can be clicked now. So a good guess is that the <code>&lt;a&gt;</code> tag was overlapped by <code>&lt;h1&gt;</code>, because it appeared before <code>&lt;h1&gt;</code> while was positioned in the same block as <code>&lt;h1&gt;</code> at the same time. As a result, the <code>&lt;a&gt;</code> tag was covered by the <code>&lt;h1&gt;</code>.</p>
+<p>To solve this problem, we simply need to add another <code>z-index</code> to the css property of <code>&lt;a&gt;</code> as following:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="id">#return</span> <span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">z-index</span>:<span class="value"> <span class="number">10</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">position</span>:<span class="value"> absolute</span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">right</span>:<span class="value"> <span class="number">0</span></span></span>;</span><br><span class="line">    <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">20px</span></span></span>;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>Now the button can be clicked and the pages is not messed up as well.</p>
+<p>An answer on <a href="http://stackoverflow.com/a/10663419" target="_blank" rel="external">StackOverflow</a> also stated a similar problem.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/10/html-anchor-tag.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;I wrote some codes below:&lt;br&gt;&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td cla
+    
+    </summary>
+    
+      <category term="Development" scheme="http://blog.wangyizhe.net/categories/Development/"/>
+    
+    
+      <category term="html &amp; css" scheme="http://blog.wangyizhe.net/tags/html-css/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TCP 3-way Handshake</title>
+    <link href="http://blog.wangyizhe.net/2015/10/TCP-3-way-Handshake/"/>
+    <id>http://blog.wangyizhe.net/2015/10/TCP-3-way-Handshake/</id>
+    <published>2015-10-14T01:36:36.000Z</published>
+    <updated>2017-03-12T14:16:57.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/10/internet.jpg" alt=""></p>
+<p>TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) both work in the transportation layer. TCP is a connection-oriented protocol, while UDP is considered as a connectionless protocol.</p>
+<p>The connection-oriented feature for TCP is represented by the 3-way handshake procedure:<br><img src="/img/2015/10/tcp-3-way-handshake.jpg" alt=""></p>
+<ol>
+<li>When typing a URL in the web browser, the web browser will translate the request into a packet, with a SYN segment, and send it to the server.</li>
+<li>The server receives the packet, and replies with another packet with a SYN-ACK segment (ACK refers to Ackowledge).</li>
+<li>The web browser receives the SYN-ACK packet, and replies with a packet with an ACT segment. Hence the handshake completes and connection is built.</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/10/internet.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) both work in the
+    
+    </summary>
+    
+      <category term="Network" scheme="http://blog.wangyizhe.net/categories/Network/"/>
+    
+    
+      <category term="protocols" scheme="http://blog.wangyizhe.net/tags/protocols/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Expression vs. Statement</title>
+    <link href="http://blog.wangyizhe.net/2015/10/Expression-vs-Statement/"/>
+    <id>http://blog.wangyizhe.net/2015/10/Expression-vs-Statement/</id>
+    <published>2015-10-08T19:08:15.000Z</published>
+    <updated>2017-03-04T04:54:51.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>There are a lot of explanations online for distinguishing those two concepts. As in the answers of <a href="http://stackoverflow.com/questions/4728073/what-is-the-difference-between-an-expression-and-a-statement-in-python" target="_blank" rel="external">this question</a> says,</p>
+<blockquote>
+<ul>
+<li><strong><a href="http://docs.python.org/reference/expressions.html" target="_blank" rel="external">Expressions</a></strong> only contain <a href="http://docs.python.org/release/2.5.2/ref/identifiers.html" target="_blank" rel="external">identifiers</a>, <a href="http://docs.python.org/release/2.5.2/ref/literals.html" target="_blank" rel="external">literals</a> and <a href="http://docs.python.org/release/2.5.2/ref/operators.html" target="_blank" rel="external">operators</a>, where operators include arithmetic and boolean operators, the function <a href="https://docs.python.org/3/reference/expressions.html?highlight=subscriptions#calls" target="_blank" rel="external">call operator</a> <code>()</code> the <a href="https://docs.python.org/3/reference/expressions.html?highlight=subscriptions#grammar-token-subscription" target="_blank" rel="external">subscription operator</a> <code>[]</code> and similar, and can be reduced to some kind of “value”, which can be any Python object.</li>
+<li><strong>Statements</strong> (see <a href="https://docs.python.org/3/reference/expressions.html?highlight=subscriptions#calls" target="_blank" rel="external">1</a>, <a href="https://docs.python.org/3/reference/expressions.html?highlight=subscriptions#grammar-token-subscription" target="_blank" rel="external">2</a>), on the other hand, are everything that can make up a line (or several lines) of Python code. Note that expressions are statements as well.</li>
+</ul>
+</blockquote>
+<p>It is quite confusing to me actually. So I find the simplest way to distinguish those two is that expressions are just a part of statements. An expression represents some operation, but it cannot be executed solely by the compiler.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;There are a lot of explanations online for distinguishing those two concepts. As in the answers of &lt;a href=&quot;http://stackoverflow.com/ques
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Create a 2-dimensional Array in JavaScript</title>
+    <link href="http://blog.wangyizhe.net/2015/10/Create-a-2-dimensional-Array-in-JavaScript/"/>
+    <id>http://blog.wangyizhe.net/2015/10/Create-a-2-dimensional-Array-in-JavaScript/</id>
+    <published>2015-10-02T16:59:15.000Z</published>
+    <updated>2017-03-12T14:09:46.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>When I tried to create a two-dimensional array today, I surprisingly discovered that there is no built-in function which can help us to create two-dimensional array in JavaScript.</p>
+<p>I searched online and people suggested several ways to do so.</p>
+<p>The simpliest I’ve found is to initialize the array with some random numbers:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> array = [[<span class="number">1</span>], [<span class="number">1</span>]];</span><br></pre></td></tr></table></figure></p>
+<p>Then you may alter the array based on your needs. However sometimes the size of the array is fixed, such as question <a href="https://leetcode.com/problems/unique-paths/" target="_blank" rel="external">“Unique Paths” on Leetcode</a>. We need an array of size <i>m</i> x <i>n</i> for dynamic programming. And we need to change the value inside based on index.</p>
+<p>If we used the example above, we would have to make a test if the size of the array is still OK. If yes, append new number in this sub-array; while if no, append a new sub-array, then append number into the new sub-array. It would be a lot of hassle with this method. So there is another way of creating an array with preset size:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> array = <span class="keyword">new</span> <span class="built_in">Array</span>(m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; m; i++) &#123;</span><br><span class="line">        array[i] = <span class="keyword">new</span> <span class="built_in">Array</span>(n);</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;When I tried to create a two-dimensional array today, I surprisingly discovered that there is no built-in function which can help us to c
+    
+    </summary>
+    
+      <category term="Languages" scheme="http://blog.wangyizhe.net/categories/Languages/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="javascript" scheme="http://blog.wangyizhe.net/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Build personal blog with Hexo Part 2</title>
+    <link href="http://blog.wangyizhe.net/2015/09/Build-personal-blog-with-Hexo-Part-2/"/>
+    <id>http://blog.wangyizhe.net/2015/09/Build-personal-blog-with-Hexo-Part-2/</id>
+    <published>2015-09-26T18:18:31.000Z</published>
+    <updated>2017-03-04T05:01:55.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/09/blog-dnspod.jpg" alt=""></p>
+<h2 id="Part-2-Deploy-to-GitHub"><a href="#Part-2-Deploy-to-GitHub" class="headerlink" title="Part 2: Deploy to GitHub"></a><p align="center">Part 2: Deploy to GitHub</p></h2><h3 id="Configure-GitHub"><a href="#Configure-GitHub" class="headerlink" title="Configure GitHub"></a>Configure GitHub</h3><ol>
+<li><p>In the upper-right corner of any page, click <strong>+</strong>, and then click <strong>New repository</strong>.<br><img src="/img/2015/09/blog-github-repo-create.png" alt=""></p>
+</li>
+<li><p>Enter name for your blog project, which must be following this pattern: &lt;username&gt;.github.io<br><img src="/img/2015/09/blog-github-repo-name.png" alt=""></p>
+</li>
+<li><p>Click <strong>Create repository</strong>.<br><img src="/img/2015/09/blog-github-create-repo-button.png" alt=""></p>
+</li>
+</ol>
+<p>Congratulations! You’ve successfully created your blog repository!</p>
+<h3 id="Generate-SSH-keys"><a href="#Generate-SSH-keys" class="headerlink" title="Generate SSH keys"></a>Generate SSH keys</h3><ol>
+<li><p>Open terminal<br>Open Git Bash if you are using Windows, or open simply Terminal if you are using Linux or Mac.</p>
+</li>
+<li><p>set your username and email</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name  <span class="string">"YourName"</span> </span><br><span class="line">git config --global user.email  <span class="string">"YourEmail@Address"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Generate SSH key</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"YourEmail@Address"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>Then it will show some lines on the screen<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/Users/your_user_directory/.ssh/id_rsa):</span><br></pre></td></tr></table></figure></p>
+<p>Simply continue. After this, the system will ask for a passphrase. You may leave it blank if you like.<br><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty <span class="keyword">for</span> <span class="literal">no</span> passphrase): </span><br><span class="line">Enter same passphrase <span class="attribute">again</span>:</span><br></pre></td></tr></table></figure></p>
+<p><img src="/img/2015/09/blog-ssh-key.png" alt=""></p>
+<ol>
+<li>Add your public key on GitHub<br>Now you should have a hidden directory in your home directory named “.ssh”, whichin this hidden directory, two files should be generated with some string similar to “id_rsa” and “id_rsa.pub”. The second one is what we need to copy to GitHub. </li>
+</ol>
+<p>So log in to your account on GitHub, click on the gear-shaped button on the upper-right corner, which will bring you to the setting page. Now find “SSH Keys” on the left hand-side menu, and click on “Add SSH Key”.<br><img src="/img/2015/09/blog-ssh-to-github.png" alt=""></p>
+<p>Now open the the “id_rsa.pub” file we mentioned before with any text editor you like, copy all the content within, and paste it in the textbox on the webpage. Confirm the change.</p>
+<ol>
+<li>Test<br>Enter the following commands in Terminal:<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>When you will see something as below, input “yes”, and enter.<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host ‘github.com (<span class="number">207.97</span><span class="number">.227</span><span class="number">.239</span>)’ can’t be established.</span><br><span class="line">RSA key fingerprint is <span class="number">16</span>:<span class="number">27</span>:<span class="string">ac:</span><span class="string">a5:</span><span class="number">76</span>:<span class="number">28</span>:<span class="number">2</span><span class="string">d:</span><span class="number">36</span>:<span class="number">63</span>:<span class="number">1</span><span class="string">b:</span><span class="number">56</span>:<span class="number">4</span><span class="string">d:</span><span class="string">eb:</span><span class="string">df:</span><span class="string">a6:</span><span class="number">48.</span></span><br><span class="line">Are you sure you want to <span class="keyword">continue</span> connecting (yes/no)?</span><br></pre></td></tr></table></figure></p>
+<h3 id="Settings-on-Hexo"><a href="#Settings-on-Hexo" class="headerlink" title="Settings on Hexo"></a>Settings on Hexo</h3><p>You may find your blog settings in file “_config.yml”. There are only two places you need to change at this stage:</p>
+<ol>
+<li><p>Title of your blog<br>In the very beginning of this file, you can change the title and subtitle to whatever you like.</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Site</span><br><span class="line"><span class="label">title</span>: <span class="keyword">Brainstorm</span><br><span class="line"></span><span class="keyword">subtitle: </span>Geeks never think alike.</span><br><span class="line"><span class="label">description</span>: Yizhe<span class="string">'s blog</span><br><span class="line">author: Yizhe Wang</span><br><span class="line">language: en</span><br><span class="line">timezone:</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Deployment settings<br>In the very ending of this file, you need to change the repository_url to the repository you created on GitHub. In my example, it should be “git@github.com:wangyiz4262/wangyiz4262.github.io.git”. And branch should be master.</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="keyword">type</span>: git</span><br><span class="line">  <span class="keyword">message</span>: [<span class="keyword">message</span>]</span><br><span class="line">  repo:</span><br><span class="line">    github: &lt;repository url&gt;,[branch]</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>If you have a domain name of your own, you can bind it to your blog. Please find tutorials online.</p>
+<p>Now the deployment is done. Enjoy blogging!</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/09/blog-dnspod.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Part-2-Deploy-to-GitHub&quot;&gt;&lt;a href=&quot;#Part-2-Deploy-to-GitHub&quot; class=&quot;headerlink
+    
+    </summary>
+    
+      <category term="Tutorial" scheme="http://blog.wangyizhe.net/categories/Tutorial/"/>
+    
+    
+      <category term="markdown" scheme="http://blog.wangyizhe.net/tags/markdown/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Build personal blog with Hexo Part 1</title>
+    <link href="http://blog.wangyizhe.net/2015/09/Build-personal-blog-with-Hexo-Part-1/"/>
+    <id>http://blog.wangyizhe.net/2015/09/Build-personal-blog-with-Hexo-Part-1/</id>
+    <published>2015-09-25T19:13:01.000Z</published>
+    <updated>2017-03-04T05:01:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/09/blog-hexo.png" alt=""></p>
+<h2 id="Part-1-Install-Hexo"><a href="#Part-1-Install-Hexo" class="headerlink" title="Part 1: Install Hexo"></a><p align="center">Part 1: Install Hexo</p></h2><h3 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h3><p>Building personal blogs has never been easier.</p>
+<p>There are a lot of good choices, free of charge, like blogspot, Sina blog, wordpress.com, etc. But I want something clean, self maintained, without annoying ads. Hmm, seems tougher, but still viable. I need to purchase some VPS space, purchase a domain name, download Wordpress framework from wordpress.org, read a lot of tutorials, and install it. Horray, after days’ effort, I am finally on my way! But, I do not feel like writing a single word after all these efforts now…</p>
+<p>Can I still have blog totally controlled by myself, without ads, without spending a penny? Yes, here comes <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>, an interesting project from a young man in Tainwan.</p>
+<h3 id="Instructions"><a href="#Instructions" class="headerlink" title="Instructions"></a>Instructions</h3><p>If you follow this tutorial, it should not take you more than a hour to finish the whole process.</p>
+<h4 id="Basic-idea"><a href="#Basic-idea" class="headerlink" title="Basic idea"></a>Basic idea</h4><p>The basic idea of using Hexo for building free blogs is to take advantages of several web-based Git repository hosting service, such as GitHub, Bitbucket, GitCafe, etc. They are not only providing source control services, but also providing a service of hosting webpages as a server.</p>
+<p>You will need to creat a new repository, then push your codes to a specific page branch, and done! For example, if you are using GitHub, you only need to push your front-end codes to the branch “gh-pages” of your new repository. The branch name for GitCafe is “gitcafe-pages”. Technically, you can create unlimited sites with this technique.</p>
+<p>The language for writing Hexo blogs is Markdown. A very intuitive language for text writing. The syntax is quite simple which almost without any burden of studying. A more detailed explanation can be found <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank" rel="external">here</a>.</p>
+<p>There are also a lot of good tutorials online. <a href="http://www.jianshu.com/p/q81RER" target="_blank" rel="external">This one</a>, for example, shows the most frequently used syntax you may come across.</p>
+<h4 id="Install-neccessary-parts"><a href="#Install-neccessary-parts" class="headerlink" title="Install neccessary parts"></a>Install neccessary parts</h4><p>There are two software needs to be install ahead, which are Node.JS and Git:</p>
+<ol>
+<li>Download and install Node.JS at official website <a href="https://nodejs.org/en/" target="_blank" rel="external">here</a></li>
+<li>Download and install Git at official website <a href="https://git-scm.com/downloads" target="_blank" rel="external">here</a><br>You may find detailed installation instruction on the website above.</li>
+</ol>
+<h4 id="Install-Hexo"><a href="#Install-Hexo" class="headerlink" title="Install Hexo"></a>Install Hexo</h4><p>If you are using Windows, then you will have Git Bash installed when you were installing Git just now. Open it.<br>If you are using Mac or Linux, you can directly open the Terminal app, and enter the following:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g hexo</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><b>Heads up</b><br>If you see some error like “-bash: npm: command not found”, then the problem is the directory containing <code>node.exe</code> was not properly added into the environment variables of your operating system. You may refer to tutorial <a href="http://www.computerhope.com/issues/ch000549.htm" target="_blank" rel="external">here</a> are how to set the path and environment variables in Windows. For Mac uses, <a href="http://osxdaily.com/2015/07/28/set-enviornment-variables-mac-os-x/" target="_blank" rel="external">this post</a> should have explained very clearly. And I believe Linux users should well know how to set system environment variables.</p>
+</blockquote>
+<h4 id="Initiate-your-blog"><a href="#Initiate-your-blog" class="headerlink" title="Initiate your blog"></a>Initiate your blog</h4><p>Now go to any directory you like, say <code>D:\blog</code>. If you are using Windows, press down Shift key, and right click on empty area, select <code>Open command window here</code> in the pop-up menu. If you are using Mac or Linux, just open Terminal and direct to the directory you specified. Then enter following codes:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo init</span><br><span class="line">$ npm install</span><br><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
+<p>And now, you have a preliminary blog set up. You may run following codes to view the result:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo g</span><br><span class="line">$ hexo s</span><br></pre></td></tr></table></figure></p>
+<p>You will see a line of code says<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO  Hexo is running at http://<span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">4000</span>/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>Then you only need to open <a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a> in your browser, and welcome to your new blog!</p>
+<p><img src="/img/2015/09/blog-theme-landscape.jpg" alt=""></p>
+<p>To Be Continued …</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/09/blog-hexo.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Part-1-Install-Hexo&quot;&gt;&lt;a href=&quot;#Part-1-Install-Hexo&quot; class=&quot;headerlink&quot; title=&quot;P
+    
+    </summary>
+    
+      <category term="Tutorial" scheme="http://blog.wangyizhe.net/categories/Tutorial/"/>
+    
+    
+      <category term="markdown" scheme="http://blog.wangyizhe.net/tags/markdown/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Interfacing an LED and debouncing switch</title>
+    <link href="http://blog.wangyizhe.net/2015/03/Interfacing-an-LED-and-debouncing-switch/"/>
+    <id>http://blog.wangyizhe.net/2015/03/Interfacing-an-LED-and-debouncing-switch/</id>
+    <published>2015-03-08T04:33:01.000Z</published>
+    <updated>2017-03-04T05:01:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/03/iot-debounce_switch.jpg" alt=""></p>
+<h3 id="Setup-the-circuitry-and-program-for-Interfacing-an-LED-and-Switch-with-Raspberry-Pi"><a href="#Setup-the-circuitry-and-program-for-Interfacing-an-LED-and-Switch-with-Raspberry-Pi" class="headerlink" title="Setup the circuitry and program for Interfacing an LED and Switch with Raspberry Pi"></a>Setup the circuitry and program for Interfacing an LED and Switch with Raspberry Pi</h3><p>Circuit Diagram:<br><img src="/img/2015/03/iot-circut_switch.png" alt=""></p>
+<p>Code:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">import</span> RPi.GPIO <span class="keyword">as</span> GPIO</span><br><span class="line"> </span><br><span class="line">GPIO.setmode(GPIO.BCM)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Switch Pin</span></span><br><span class="line">GPIO.setup(<span class="number">25</span>, GPIO.IN)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># LED Pin</span></span><br><span class="line">GPIO.setup(<span class="number">18</span>, GPIO.OUT)</span><br><span class="line"> </span><br><span class="line">state = <span class="keyword">False</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">toggleLED</span><span class="params">(pin, state)</span>:</span></span><br><span class="line">    state = <span class="keyword">not</span> state</span><br><span class="line">    GPIO.output(pin, state)</span><br><span class="line">    <span class="keyword">return</span> state</span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">True</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> (GPIO.input(<span class="number">25</span>) == <span class="keyword">True</span>):</span><br><span class="line">            state = toggleLED(<span class="number">18</span>, state)</span><br><span class="line">        sleep(<span class="number">.01</span>)</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        exit()</span><br></pre></td></tr></table></figure></p>
+<p>Findings:</p>
+<ol>
+<li>The code given by the book is not compilable, because there is no variable “state” within the scope of function toggleLED, therefore I need to pass-in state as another argument and set the return value to be the updated state.</li>
+<li>If I print out the current phase when I press the button, it showed that it had covered several phases on each pressed. This proves that while the button is being pressed down, it sends signals to the Raspberry Pi constantly.</li>
+</ol>
+<h3 id="Debounce-the-button-with-better-software-support-or-use-interrupts"><a href="#Debounce-the-button-with-better-software-support-or-use-interrupts" class="headerlink" title="Debounce the button with better software support or use interrupts"></a>Debounce the button with better software support or use interrupts</h3><p>Code:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> RPi.GPIO <span class="keyword">as</span> GPIO</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">off</span><span class="params">(inPin, outPin, status)</span>:</span></span><br><span class="line">    GPIO.output(outPin, <span class="keyword">False</span>)</span><br><span class="line">    status = <span class="keyword">False</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">True</span>):</span><br><span class="line">        <span class="keyword">if</span> (GPIO.input(inPin)):</span><br><span class="line">            <span class="keyword">return</span> status</span><br><span class="line">        sleep(<span class="number">0.15</span>)</span><br><span class="line"> </span><br><span class="line">     </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">slow</span><span class="params">(inPin, outPin, status)</span>:</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">True</span>):</span><br><span class="line">        status = <span class="keyword">not</span> status</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> xrange(<span class="number">1</span>,<span class="number">4</span>):</span><br><span class="line">            GPIO.output(outPin, status)</span><br><span class="line">            sleep(<span class="number">0.15</span>)</span><br><span class="line">            <span class="keyword">if</span> (GPIO.input(inPin)):</span><br><span class="line">                <span class="keyword">return</span> status</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fast</span><span class="params">(inPin, outPin, status)</span>:</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">True</span>):</span><br><span class="line">        status = <span class="keyword">not</span> status</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> xrange(<span class="number">1</span>,<span class="number">2</span>):</span><br><span class="line">            GPIO.output(outPin, status)</span><br><span class="line">            sleep(<span class="number">0.15</span>)</span><br><span class="line">            <span class="keyword">if</span> (GPIO.input(inPin)):</span><br><span class="line">                <span class="keyword">return</span> status</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">GPIO.setmode(GPIO.BCM)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Switch Pin</span></span><br><span class="line">inputPin = <span class="number">25</span></span><br><span class="line">GPIO.setup(inputPin, GPIO.IN)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># LED Pin</span></span><br><span class="line">outputPin = <span class="number">18</span></span><br><span class="line">GPIO.setup(outputPin, GPIO.OUT)</span><br><span class="line"> </span><br><span class="line">status = <span class="keyword">False</span></span><br><span class="line">GPIO.output(outputPin, status)</span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">True</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> (GPIO.input(inputPin)):</span><br><span class="line">            status = slow(inputPin, outputPin, status)</span><br><span class="line">            status = fast(inputPin, outputPin, status)</span><br><span class="line">            status = off(inputPin, outputPin, status)</span><br><span class="line">             </span><br><span class="line">        sleep(<span class="number">0.05</span>)</span><br><span class="line">         </span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        GPIO.cleanup()</span><br><span class="line">        exit()</span><br></pre></td></tr></table></figure></p>
+<p>Findings:</p>
+<ol>
+<li>The interval for sleeping is very crucial. If the sleeping time is set to be 0.05 seconds, and when pressing the button, it will jump to the phase after next. For example, the pi is current in slow flashing, and when pressing the button, the pi suddenly stopped flashing or even slow flashing again, which means the fast flashing was skipped. If the sleeping interval is set to be 0.15 seconds, it becomes much better. I guess it is because human motion of pressing button takes some time that crosses two phases.</li>
+<li>It is better to have an asynchronous method which can monitor the action of button press. Otherwise, people will need to press the button just when not in sleeping time.</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/03/iot-debounce_switch.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Setup-the-circuitry-and-program-for-Interfacing-an-LED-and-Switch-wit
+    
+    </summary>
+    
+      <category term="Internet of Things" scheme="http://blog.wangyizhe.net/categories/Internet-of-Things/"/>
+    
+    
+      <category term="python" scheme="http://blog.wangyizhe.net/tags/python/"/>
+    
+      <category term="raspberry pi" scheme="http://blog.wangyizhe.net/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Recursion and Stack memory</title>
+    <link href="http://blog.wangyizhe.net/2015/02/Recursion-and-Stack-memory/"/>
+    <id>http://blog.wangyizhe.net/2015/02/Recursion-and-Stack-memory/</id>
+    <published>2015-02-07T22:02:07.000Z</published>
+    <updated>2017-03-12T14:18:53.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/02/leetcode-stack.png" alt=""></p>
+<p>When I was thinking about the problem <a href="https://oj.leetcode.com/problems/validate-binary-search-tree/" target="_blank" rel="external">Validate Binary Search Tree</a>, my code runs like this:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isValidBST</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    TreeNode previous = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">return</span> helper(root, previous);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">helper</span><span class="params">(TreeNode root, TreeNode previous)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">boolean</span> left = helper(root.left, previous);</span><br><span class="line">    <span class="keyword">if</span> (previous != <span class="keyword">null</span> &amp;&amp; root.val &lt;= previous.val) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    previous = root;</span><br><span class="line">    <span class="keyword">boolean</span> right = helper(root.right, previous);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> left &amp;&amp; right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The idea was simple by using BST’s good feature: in-order traversal is in order. So I used a temporary tree node “previous” to record the last visited node on the stack. After comparing the value of previous node and the current node, I changed the previous node to be the current node, and then go to to the next iteration, which might be popping out the left child and returning to its parent, or going to the right child.</p>
+<p>The algorithm should correct? However when testing a tree in the following form, it gave me a result as TRUE.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">1</span></span><br><span class="line"> /</span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>So where is the problem?</p>
+<p>The problem comes from the assignment:<br><figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">previous = root<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>The reason is that when using recursion, each time the function calls itself, the program push all the variable on the current stage into a stack on memory, so that when you return back to this stage, everything restores back to their value as last time they were. But when storing objects in Java, what the stack stores is the reference, or the memory address to this object, while the actual data is stored on the heap. So even though you have changed the actual object this variable referring to, as in this case TreeNode previous is assigned to the current root node, when restored to the last stage, the reference of previous changed back the last stage, which might be either the parent node of root, or the right child of root. This is reason why it gives an erroneous result.</p>
+<p>To make this program work, simply change the actual node value of previous instead of changing the reference and it should be fine.</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">previous.<span class="keyword">val</span> = root.<span class="keyword">val</span>;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/02/leetcode-stack.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;When I was thinking about the problem &lt;a href=&quot;https://oj.leetcode.com/problems
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Corner cases for binary trees</title>
+    <link href="http://blog.wangyizhe.net/2015/02/Corner-cases-for-binary-trees/"/>
+    <id>http://blog.wangyizhe.net/2015/02/Corner-cases-for-binary-trees/</id>
+    <published>2015-02-05T21:55:37.000Z</published>
+    <updated>2017-03-12T14:18:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/02/leetcode-tree.jpg" alt=""><br>When doing LeetCode problems, some corner cases should be considered when traversing through the tree, otherwise unexpected errors shall appear. Examples:<br><a href="https://oj.leetcode.com/problems/symmetric-tree/" target="_blank" rel="external">Symmetric Tree</a><br><a href="https://oj.leetcode.com/problems/same-tree/" target="_blank" rel="external">Same Tree</a></p>
+<p>The following code takes <a href="https://oj.leetcode.com/problems/symmetric-tree/" target="_blank" rel="external">Symmetric Tree</a> as an example:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> something;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// when the node is leaf node</span></span><br><span class="line">    <span class="keyword">if</span> (root.left == <span class="keyword">null</span> &amp;&amp; root.right == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> something;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// when the node has both children</span></span><br><span class="line">    <span class="keyword">if</span> (root.left != <span class="keyword">null</span> &amp;&amp; root.right != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (root.left.val == root.right.val) &#123;</span><br><span class="line">            do something;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            do something;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// when the node is not leaf node yet</span></span><br><span class="line">    do something;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/02/leetcode-tree.jpg&quot; alt=&quot;&quot;&gt;&lt;br&gt;When doing LeetCode problems, some corner cases should be considered when traversing
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DFS in Binary Tree</title>
+    <link href="http://blog.wangyizhe.net/2015/02/DFS-in-Binary-Tree/"/>
+    <id>http://blog.wangyizhe.net/2015/02/DFS-in-Binary-Tree/</id>
+    <published>2015-02-04T21:58:00.000Z</published>
+    <updated>2017-03-12T14:18:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/02/leetcode-tree.jpg" alt=""></p>
+<p>Let’s think about this problem: <a href="https://oj.leetcode.com/problems/sum-root-to-leaf-numbers/" target="_blank" rel="external">Sum Root to Leaf Numbers</a>.</p>
+<p>A general solution is like below:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">sumNumbers</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ArrayList&lt;String&gt; numbers = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">    StringBuffer route = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">    helper(root, numbers, route);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (String str : numbers) &#123;</span><br><span class="line">        result += Integer.parseInt(str);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">helper</span><span class="params">(TreeNode root, ArrayList&lt;String&gt; numbers, StringBuffer route)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (root.left == <span class="keyword">null</span> &amp;&amp; root.right == <span class="keyword">null</span>) &#123;</span><br><span class="line">        route.append(root.val);</span><br><span class="line">        numbers.add(route.toString());</span><br><span class="line">        route.deleteCharAt(route.length() - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    route.append(root.val);</span><br><span class="line">    helper(root.left, numbers, route);</span><br><span class="line">    helper(root.right, numbers, route);</span><br><span class="line">    route.deleteCharAt(route.length() - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Actually the core part for DFS recursion is the last two calls of helper() method:</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">helper<span class="list">(<span class="keyword">root</span>.left)</span><span class="comment">;</span></span><br><span class="line">helper<span class="list">(<span class="keyword">root</span>.right)</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>In this way, we have traverse the tree in pre-order. So this is the essence of DFS for binary trees. Then we just include three other pieces, and we are done with this sort of questions.</p>
+<ol>
+<li>Checking null for the current node is a routine operation. This means we have reached the bottom of this iteration, either on the left side or the right side, then we return to the previous level of the stack.</li>
+<li>Do something about the current node. This is the actually what the problem is asking for. In the example above, we check if we have reached the leaf node. If we do, add the update the preliminary result into the ArrayList. If we need to use backtrack to record the results, don’t forget to remove the last added element from the preliminary result before we continue.</li>
+<li>The order of the recursion depends on whether it is pre-order, in-order, or post-order.</li>
+</ol>
+<p>A similar problem is: <a href="https://oj.leetcode.com/problems/path-sum-ii/" target="_blank" rel="external">Path Sum II</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/02/leetcode-tree.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Let’s think about this problem: &lt;a href=&quot;https://oj.leetcode.com/problems/sum-ro
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Run-Length Encoding algorithm for Strings</title>
+    <link href="http://blog.wangyizhe.net/2015/02/Run-Length-Encoding-algorithm-for-Strings/"/>
+    <id>http://blog.wangyizhe.net/2015/02/Run-Length-Encoding-algorithm-for-Strings/</id>
+    <published>2015-02-04T21:52:31.000Z</published>
+    <updated>2017-03-12T14:18:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/02/leetcode-string.png" alt=""><br>Imagine we need to compress a string “1111422311” into “4114221321”, which means “four ones, one four, two twos, one three, two ones”. Here is the implementation for this functionality:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">compress</span><span class="params">(String str)</span>  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (str == <span class="keyword">null</span> || str.length() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    StringBuffer result = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">    <span class="keyword">int</span> stringIndex = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">while</span> (stringIndex &lt; s.length()) &#123;</span><br><span class="line">        <span class="keyword">int</span> counter = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">char</span> digit = s.charAt(stringIndex);</span><br><span class="line">        <span class="keyword">while</span> (stringIndex &lt; s.length() &amp;&amp; digit == s.charAt(stringIndex)) &#123;</span><br><span class="line">            counter++;</span><br><span class="line">            stringIndex++;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        result.append(counter);</span><br><span class="line">        result.append(digit);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> result.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/02/leetcode-string.png&quot; alt=&quot;&quot;&gt;&lt;br&gt;Imagine we need to compress a string “1111422311” into “4114221321”, which means “
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Breadth-First Traversal with Queue</title>
+    <link href="http://blog.wangyizhe.net/2015/01/Breadth-First-Traversal-with-Queue/"/>
+    <id>http://blog.wangyizhe.net/2015/01/Breadth-First-Traversal-with-Queue/</id>
+    <published>2015-01-29T21:42:41.000Z</published>
+    <updated>2017-03-12T14:18:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Breadth-First Traversal can be used in many places, such as traversing level-by-level in a binary tree, or BFS in a graph. All those are implemented with a Queue.<br><a href="https://oj.leetcode.com/problems/binary-tree-level-order-traversal/" target="_blank" rel="external">Binary Tree Level Order Traversal</a><br><a href="https://oj.leetcode.com/problems/binary-tree-level-order-traversal-ii/" target="_blank" rel="external">Binary Tree Level Order Traversal II</a><br><a href="https://oj.leetcode.com/problems/binary-tree-zigzag-level-order-traversal/" target="_blank" rel="external">Binary Tree Zigzag Level Order Traversal</a><br><a href="https://oj.leetcode.com/problems/word-ladder/" target="_blank" rel="external">Word Ladder</a></p>
+<p>Take binary tree level-by-level traverse for example, we can therefore have this template as a general summary:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ArrayList&lt;List&lt;Integer&gt;&gt; levelOrder(TreeNode root) &#123;</span><br><span class="line">    ArrayList&lt;List&lt;Integer&gt;&gt;  result = <span class="keyword">new</span> ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    Queue&lt;TreeNode&gt; queue = <span class="keyword">new</span> LinkedList&lt;TreeNode&gt;();</span><br><span class="line"> </span><br><span class="line">    queue.offer(root);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">while</span> (!queue.isEmpty()) &#123;</span><br><span class="line">        ArrayList&lt;Integer&gt; visitingRecord = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">        <span class="keyword">int</span> size = queue.size();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">            TreeNode node = queue.poll();</span><br><span class="line">            visitingRecord.add(node.val);</span><br><span class="line">            <span class="keyword">if</span> (node.left != <span class="keyword">null</span>) &#123;</span><br><span class="line">                queue.offer(node.left);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (node.right != <span class="keyword">null</span>) &#123;</span><br><span class="line">                queue.offer(node.right);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        result.add(visitingRecord);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>There are eight main parts in the template:</p>
+<ol>
+<li>Validate the parameter passed in if (root == null).</li>
+<li>Create a queue and include the first element into the queue.</li>
+<li>Enter a loop based on the emptiness of the queue.</li>
+<li>Get the size of the queue, which is actually the <code>SIZE OF EACH LAYER</code>.</li>
+<li>Loop through this layer, pop out one element each time, and do some stuff about this element, such as add to a tracing record.</li>
+<li>Then add the relevant nodes of this node into the queue.</li>
+<li>At the end of iteration of the while loop, do something about this visited layer, such as add to the tracing record.</li>
+<li>Return the result</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Breadth-First Traversal can be used in many places, such as traversing level-by-level in a binary tree, or BFS in a graph. All those are 
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Array partition with two pointers</title>
+    <link href="http://blog.wangyizhe.net/2015/01/Array-partition-with-two-pointers/"/>
+    <id>http://blog.wangyizhe.net/2015/01/Array-partition-with-two-pointers/</id>
+    <published>2015-01-28T21:00:06.000Z</published>
+    <updated>2017-03-12T14:18:35.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/img/2015/01/leetcode-array.jpg" alt=""><br>Some problem are using this template with minor alternation, such as:<br><a href="http://examples.javacodegeeks.com/core-java/quicksort-algorithm-in-java-code-example/" target="_blank" rel="external">Quick Sort</a><br><a href="http://lintcode.com/en/problem/partition-array" target="_blank" rel="external">Partition Array</a><br><a href="http://lintcode.com/en/problem/sort-letters-by-case/" target="_blank" rel="external">Sort Letters by Case</a><br><a href="http://lintcode.com/zh-cn/problem/sort-colors/" target="_blank" rel="external">Sort Colors</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partitionArray</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> left, <span class="keyword">int</span> right, <span class="keyword">int</span> pivot)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nums == <span class="keyword">null</span> || nums.length == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (left &lt;= right || left &gt; <span class="number">0</span> || right &gt;= nums.length) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">int</span> leftPointer = left;</span><br><span class="line">    <span class="keyword">int</span> rightPointer = right;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">while</span> (leftPointer &lt; rightPointer) &#123;</span><br><span class="line">        <span class="keyword">while</span> (nums[leftPointer] &lt; pivot &amp;&amp; leftPointer &lt; right) &#123;</span><br><span class="line">            leftPointer++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (nums[rightPointer] &gt;= pivot &amp;&amp; rightPointer &gt; left) &#123;</span><br><span class="line">            rightPointer--;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// some condition of this swap</span></span><br><span class="line">        swap(nums, leftPointer, rightPointer);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// some condition of this swap</span></span><br><span class="line">    swap(nums, leftPointer, rightPointer);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// decide whether to return the position of this pivot</span></span><br><span class="line">    <span class="keyword">return</span> rightPointer + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> left, <span class="keyword">int</span> right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = nums[left];</span><br><span class="line">    nums[left] = nums[right];</span><br><span class="line">    nums[right] = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/img/2015/01/leetcode-array.jpg&quot; alt=&quot;&quot;&gt;&lt;br&gt;Some problem are using this template with minor alternation, such as:&lt;br&gt;&lt;a href=&quot;h
+    
+    </summary>
+    
+      <category term="Coding Practice" scheme="http://blog.wangyizhe.net/categories/Coding-Practice/"/>
+    
+    
+      <category term="data structure" scheme="http://blog.wangyizhe.net/tags/data-structure/"/>
+    
+      <category term="leetcode" scheme="http://blog.wangyizhe.net/tags/leetcode/"/>
+    
+  </entry>
+  
+</feed>

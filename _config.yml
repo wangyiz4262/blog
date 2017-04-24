@@ -19,7 +19,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public
+public_dir: docs
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
@@ -73,6 +73,5 @@ duoshuo_shortname: wangyiz4262
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo:
-    github: git@github.com:wangyiz4262/blog.git,gh-pages
-    coding: git@git.coding.net:wangyiz4262/blog.git,coding-pages
+  repo: git@git.coding.net:wangyiz4262/blog.git
+  branch: coding-pages

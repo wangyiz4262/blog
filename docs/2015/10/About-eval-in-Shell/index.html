@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>About eval in Shell | Brainstorm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="The textbook says in bash scripting, eval plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with $">
+<meta property="og:type" content="article">
+<meta property="og:title" content="About eval in Shell">
+<meta property="og:url" content="http://blog.wangyizhe.net/2015/10/About-eval-in-Shell/index.html">
+<meta property="og:site_name" content="Brainstorm">
+<meta property="og:description" content="The textbook says in bash scripting, eval plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with $">
+<meta property="og:image" content="http://blog.wangyizhe.net/img/2015/10/os-linux-shell.png">
+<meta property="og:updated_time" content="2017-03-04T05:02:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="About eval in Shell">
+<meta name="twitter:description" content="The textbook says in bash scripting, eval plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with $">
+  
+  
+    <link rel="icon" href="/img/favicon.ico">
+  
+
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  
+  
+    <link rel="stylesheet" href="/scrollLoading/style.css" type="text/css">
+  
+  
+
+
+  
+
+  <link rel="stylesheet" href="/googleapi/TitilliumWeb.css" type="text/css">
+  <link rel="stylesheet" href="/googleapi/SourceCodePro.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css" type="text/css">
+
+  
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml">
+  
+
+  
+    <link rel="alternate" type="application/atom+xml" href="/sitemap.xml">
+  
+</head>
+
+<body>
+  <div id="wrap">
+    <header id="header">
+  <div id="header-outer" class="outer">
+    <div class="container">
+      <div class="container-inner">
+        <div id="header-title">
+          <h1 class="logo-wrap">
+            <a href="/" class="logo">Brainstorm</a>
+          </h1>
+          
+            <h2 class="subtitle-wrap">
+              <p class="subtitle">Geeks never think alike.</p>
+            </h2>
+          
+        </div>
+        <div id="header-inner" class="nav-container">
+          <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+          <div class="nav-container-inner">
+            <ul id="main-nav">
+              
+                <li class="main-nav-list-item" ><a class="main-nav-list-link" href="/">Home</a></li>
+              
+            </ul>
+
+            <nav id="sub-nav">
+              <div id="search-form-wrap">
+                
+<!--
+                <form accept-charset="UTF-8" class="search-form">
+                  <input type="text" id="bdcsMain" class="search-form-input" placeholder="Search">
+                </form>
+-->
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <div class="main-body container-inner">
+        <div class="main-body-inner">
+          <section id="main">
+<!--
+            <div class="main-body-header">
+
+              <h1 class="header"><a class="page-title-link" href="/categories/Operating-System/">Operating System</a></h1>
+            </div>
+-->
+            <div class="main-body-content">
+              
+  <article id="post-About-eval-in-Shell" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+      
+      
+        <header class="article-header">
+          
+  
+    <h1 class="article-title" itemprop="name">
+      About eval in Shell
+    </h1>
+  
+
+        </header>
+      
+      <p class="article-byline">
+        <a href="/2015/10/About-eval-in-Shell/" class="article-date">
+  <time datetime="2015-10-21T02:23:00.000Z" itemprop="datePublished">2015-10-20</time>
+</a>
+      </p>
+      <div class="article-entry" itemprop="articleBody">
+        <p><img src="/img/2015/10/os-linux-shell.png" alt=""><br>The textbook says in bash scripting, <code>eval</code> plays a role that the expression comes after will be evaluated twice before the final execution. By saying evaluation, it means the variables begining with <code>$</code> will be translated to whatever its value is.</p>
+<p>Let’s see some examples.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ a=<span class="string">'10'</span></span><br><span class="line">$ b=a</span><br></pre></td></tr></table></figure>
+<p>Now b is assigned with <code>a</code>, and this <code>a</code> is simply a string, not a variable yet.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="variable">$a</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$b</span></span><br><span class="line">a</span><br></pre></td></tr></table></figure>
+<p>Now we execute these two variables in different ways:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$a</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ `<span class="variable">$a</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ $(<span class="variable">$a</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> <span class="variable">$a</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> `<span class="variable">$a</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="variable">$a</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ `<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ $(<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> <span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> `<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: a</span><br></pre></td></tr></table></figure>
+<p>But if we now evaluate <code>\$$b</code>, as we know <code>\</code> will escape the <code>$</code> sign, something interesting will show up.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># experiment 1</span></span><br><span class="line">$ \$<span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 2</span></span><br><span class="line">$ `\$<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">99361</span>b</span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 3</span></span><br><span class="line">$ $(\$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 4</span></span><br><span class="line">$ <span class="built_in">eval</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 5</span></span><br><span class="line">$ <span class="built_in">eval</span> `\$<span class="variable">$b</span>`</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">99361</span>b</span><br><span class="line"></span><br><span class="line"><span class="comment"># experiment 6</span></span><br><span class="line">$ <span class="built_in">eval</span> $(\$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br></pre></td></tr></table></figure>
+<p>Some conclusions may be drawn from the above experiments:</p>
+<ul>
+<li><p>Before each execution of command, the known variables in the expression will be converted to its value. As in experiment 1, <code>\$$b</code> is translated to <code>$a</code> before executing, then <code>$a</code> is executed as if it is a command, and apparently results in a not-found error. Another example would be</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> <span class="built_in">echo</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>  With <code>eval</code>, the entire expression will be evaluated twice. <code>\$$b</code> is translated to <code>$a</code> in the first place, then <code>echo $a</code> is executed. Similarly, <code>$a</code> is translated to <code>10</code> before this execution, and <code>10</code> is printed on screen as a result.</p>
+</li>
+<li><p>There is difference between experiment 1 and 4 is because that <code>\$$b</code> is actually executing <code>$a</code> as a command, while <code>eval \$$b</code> will first convert $b into a, then evaluates again from <code>$a</code> to <code>10</code>. Now <code>10</code> is executed as a command.</p>
+</li>
+<li><p><code>` `</code> and <code>$()</code> are called “command substitution”, which means the expression within will be evaluated and executed before the outside command gets in. The outside command usually is <code>echo</code>.</p>
+<ul>
+<li>It is said that <code>` `</code> and <code>$()</code> should be interchangeable, however it apparently is not, judging from experiment 2 and 3.</li>
+<li>From experiment 2 and 3, we could see that <code>$(\$$b)</code> seems to have been successfully translated <code>\$$b</code> into <code>$a</code>. But <code>`\$$b`</code> seems to have first converted <code>\$$</code> into <code>$$</code>, which is the process ID of the current shell, then concatenated ‘b’ at the end and return.</li>
+<li>Therefore a good guess is that <code>` `</code> grants higher priority to escaped characters than variables when evaluating.</li>
+<li>It is recommended to use <code>$()</code> instead of <code>` `</code> for command substitution.</li>
+</ul>
+</li>
+<li><p>Consider another example of using <code>eval</code> and <code>$()</code>:</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> <span class="built_in">echo</span> \$<span class="variable">$b</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line">$ <span class="built_in">eval</span> $(<span class="built_in">echo</span> \$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="number">10</span></span><br><span class="line">$ $(<span class="built_in">echo</span> \$<span class="variable">$b</span>)</span><br><span class="line"><span class="built_in">command</span> not found: <span class="variable">$a</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>eval echo \$$b</code> evaluated <code>\$$b</code> to <code>$a</code>, then evaluated <code>$a</code> to its value <code>10</code> before echoing it out, finally echoed the result.</li>
+<li><code>eval $(echo \$$b)</code> did the first three steps the same as above, but it has one more step, which was what <code>$()</code> did, to execute the result. Therefore you got a not-found error message.</li>
+<li><code>$(echo \$$b)</code> did the same as the second example, except the double evaluation part. That is, first evaluate <code>\$$b</code> to <code>$a</code>, which is associated with “echo”; then echoed it out as a string “$a”; lastly, ran it as a command, and received a not-found error said “command ‘$a’ was not found”.</li>
+</ul>
+</li>
+</ul>
+
+      </div>
+      <footer class="article-footer">
+        <a data-url="http://blog.wangyizhe.net/2015/10/About-eval-in-Shell/" data-id="cj1vlwemk0017x9rlmumomt99" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+
+        
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/">shell</a></li></ul>
+
+      </footer>
+    </div>
+  </article>
+
+  
+    
+  
+
+
+            </div>
+          </section>
+          <aside id="sidebar">
+  <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+  <div class="sidebar-top">
+    <p>follow:</p>
+    <ul class="social-links">
+      
+        <li><a class="social-tooltip" title="linkedin" href="https://www.linkedin.com/in/wangyizhe" target="_blank"><i class="icon fa fa-linkedin"></i></a></li>
+      
+        <li><a class="social-tooltip" title="github" href="https://github.com/wangyiz4262" target="_blank"><i class="icon fa fa-github"></i></a></li>
+      
+        <li><a class="social-tooltip" title="rss" href="/atom.xml" target="_blank"><i class="icon fa fa-rss"></i></a></li>
+      
+    </ul>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/Extra-white-space-on-my-page/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">newer</strong>
+      <p class="article-nav-title">
+        
+          Extra white space on my page
+        
+      </p>
+      <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+  
+  
+    <a href="/2015/10/Why-my-a-tag-can-not-be-clicked/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">older</strong>
+      <p class="article-nav-title">Why my &lt;a&gt; tag can not be clicked</p>
+      <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+    </a>
+  
+</nav>
+
+  
+  <div class="widgets-container">
+    
+      
+  <div class="widget-wrap">
+    <h3 class="widget-title">recents</h3>
+    <div class="widget">
+      <ul id="recent-post" class="">
+        
+          <li>
+<!--
+            
+            <div class="item-thumbnail">
+              
+<a href="/2017/03/Iterations-in-JavaScript-Promise/" class="thumbnail">
+  
+    <span style="background-image:url(/img/2017/03/promise.png
+)" alt="Iterations in JavaScript Promise" class="thumbnail-image"></span>
+  
+</a>
+
+            </div>
+            
+-->
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/Languages/">Languages</a></p>
+              <p class="item-title"><a href="/2017/03/Iterations-in-JavaScript-Promise/" class="title">Iterations in JavaScript Promise</a></p>
+              <p class="item-date"><time datetime="2017-03-12T03:46:43.000Z" itemprop="datePublished">2017-03-11</time></p>
+            </div>
+          </li>
+        
+          <li>
+<!--
+            
+            <div class="item-thumbnail">
+              
+<a href="/2017/03/Classes-in-the-new-ES6-standard/" class="thumbnail">
+  
+    <span style="background-image:url(/img/2017/03/es6.png
+)" alt="Classes in the new ES6 standard" class="thumbnail-image"></span>
+  
+</a>
+
+            </div>
+            
+-->
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/Languages/">Languages</a></p>
+              <p class="item-title"><a href="/2017/03/Classes-in-the-new-ES6-standard/" class="title">Classes in the new ES6 standard</a></p>
+              <p class="item-date"><time datetime="2017-03-11T15:15:17.000Z" itemprop="datePublished">2017-03-11</time></p>
+            </div>
+          </li>
+        
+          <li>
+<!--
+            
+            <div class="item-thumbnail">
+              
+<a href="/2017/03/A-simple-timeout-mechanism-for-Promise/" class="thumbnail">
+  
+    <span style="background-image:url(/img/2017/03/promise.png
+)" alt="A simple timeout mechanism for Promise" class="thumbnail-image"></span>
+  
+</a>
+
+            </div>
+            
+-->
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/Languages/">Languages</a></p>
+              <p class="item-title"><a href="/2017/03/A-simple-timeout-mechanism-for-Promise/" class="title">A simple timeout mechanism for Promise</a></p>
+              <p class="item-date"><time datetime="2017-03-04T02:01:42.000Z" itemprop="datePublished">2017-03-03</time></p>
+            </div>
+          </li>
+        
+          <li>
+<!--
+            
+            <div class="item-thumbnail">
+              
+<a href="/2017/03/A-few-notes-about-Promise-in-JavaScript/" class="thumbnail">
+  
+    <span style="background-image:url(/img/2017/03/promise.png
+)" alt="Rejection in Promise" class="thumbnail-image"></span>
+  
+</a>
+
+            </div>
+            
+-->
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/Languages/">Languages</a></p>
+              <p class="item-title"><a href="/2017/03/A-few-notes-about-Promise-in-JavaScript/" class="title">Rejection in Promise</a></p>
+              <p class="item-date"><time datetime="2017-03-03T04:26:06.000Z" itemprop="datePublished">2017-03-02</time></p>
+            </div>
+          </li>
+        
+          <li>
+<!--
+            
+            <div class="item-thumbnail">
+              
+<a href="/2015/10/Extra-white-space-on-my-page/" class="thumbnail">
+  
+    <span style="background-image:url(/img/2015/10/html-white-space-on-the-right-side-of-page.png
+)" alt="Extra white space on my page" class="thumbnail-image"></span>
+  
+</a>
+
+            </div>
+            
+-->
+            <div class="item-inner">
+              <p class="item-category"><a class="article-category-link" href="/categories/Development/">Development</a></p>
+              <p class="item-title"><a href="/2015/10/Extra-white-space-on-my-page/" class="title">Extra white space on my page</a></p>
+              <p class="item-date"><time datetime="2015-10-21T19:17:31.000Z" itemprop="datePublished">2015-10-21</time></p>
+            </div>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget-wrap widget-list">
+    <h3 class="widget-title">categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coding-Practice/">Coding Practice</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Development/">Development</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Internet-of-Things/">Internet of Things</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Languages/">Languages</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Network/">Network</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Operating-System/">Operating System</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tutorial/">Tutorial</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-list">
+    <h3 class="widget-title">archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-list">
+    <h3 class="widget-title">tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structure/">data structure</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/es6/">es6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/html-css/">html & css</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/">leetcode</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/promise/">promise</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protocols/">protocols</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/raspberry-pi/">raspberry pi</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/recursion/">recursion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap widget-list">
+    <h3 class="widget-title">links</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="http://wangyizhe.net/resume">Resume</a>
+          </li>
+        
+          <li>
+            <a href="https://leetcode.com/">LeetCode</a>
+          </li>
+        
+          <li>
+            <a href="http://hexo.io">Hexo</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+    
+  </div>
+</aside>
+        </div>
+      </div>
+    </div>
+    <footer id="footer">
+  
+  <div class="container">
+    <div class="container-inner">
+      <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+      <div class="credit">
+<!--
+        <h1 class="logo-wrap">
+          <a href="/" class="logo"></a>
+        </h1>
+-->
+        <p>&copy; 2017 Yizhe Wang</p>
+        <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+    
+
+
+  <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+  <script src="/scrollLoading/jquery.scrollLoading.js" type="text/javascript"></script>
+  <script src="/scrollLoading/main.js" type="text/javascript"></script>
+
+
+<script src="/js/html-patch.js" type="text/javascript"></script>
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
