@@ -6,3 +6,5 @@ node_modules/
 *.sublime-*
 .idea/
 .vscode/
+docs/.git/
+docs/.gitignore
